@@ -28,21 +28,22 @@
 namespace io {
   namespace detail {
     namespace read {
-      template<typename container_t>
+      template<typename mesh_t>
       struct vertex : public gloop::stream::null_reader {
-        container_t &container;
-        vertex(container_t &_container) : container(_container) {
+        mesh_t *mesh;
+
+        vertex(mesh_t *_mesh) : mesh(_mesh) {
         }
         virtual void next() {
-          container.push_back(container_t::value_type());
+          mesh->add_vertex(v3_t::zero());
         }
         virtual void length(int l) {
-          if (l > 0) container.reserve(container.size() + l);
+          if (l > 0) mesh->vertices.reserve(mesh->vertices.size() + l);
         }
         virtual void end() {
         }
-        typename container_t::value_type &curr() const {
-          return container.back();
+        typename mesh_t::vert_t &curr() const {
+          return mesh->vertices.back();
         }
 
         template<int idx>
@@ -167,12 +168,12 @@ namespace io {
 
 
   template<typename mesh_t, typename filetype_t>
-  mesh_t *read_mesh(std::istream &in, filetype_t &f) {
-    mesh_t *mesh = new mesh_t;
+  bool read_mesh(std::istream &in, filetype_t &f, mesh_t *&mesh) {
+    mesh = new mesh_t;
 
-    typedef detail::read::vertex<std::vector<typename mesh_t::vert_t> > vertex_t;
+    typedef detail::read::vertex<mesh_t> vertex_t;
 
-    vertex_t *vi = new vertex_t(mesh->vertices);
+    vertex_t *vi = new vertex_t(mesh);
     f.addReader("polyhedron.vertex", vi);
     f.addReader("polyhedron.vertex.x", new typename vertex_t::template component<0>(vi));
     f.addReader("polyhedron.vertex.y", new typename vertex_t::template component<1>(vi));
@@ -184,10 +185,10 @@ namespace io {
 
     if (!f.read(in)) {
       delete mesh;
-      return NULL;
+      return false;
     }
 
-    return mesh;
+    return true;
   }
 
 
