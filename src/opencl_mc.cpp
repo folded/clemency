@@ -26,7 +26,6 @@
 #include <clemency/mesh.hpp>
 #include <clemency/mesh_io.hpp>
 #include <clemency/quadric.hpp>
-#include <clemency/config.h>
 
 #include <fstream>
 #include <deque>
