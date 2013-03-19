@@ -55,5 +55,6 @@ include_directories(${clemency_BINARY_DIR}/include)
 add_definitions(-DCMAKE_BUILD)
 
 add_subdirectory(include) 
+add_subdirectory(lib)
 add_subdirectory(src) 
 add_subdirectory(tests)

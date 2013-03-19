@@ -15,17 +15,17 @@ if(BUILD_TESTING)
   include_directories("${clemency_SOURCE_DIR}/include")
 
   add_executable(test_m3inv test_m3inv.cpp)
-  target_link_libraries(test_m3inv ${GTEST_BOTH_LIBRARIES})
+  target_link_libraries(test_m3inv ${GTEST_BOTH_LIBRARIES} clemency)
 
   add_executable(test_bezier test_bezier.cpp)
-  target_link_libraries(test_bezier ${GTEST_BOTH_LIBRARIES})
+  target_link_libraries(test_bezier ${GTEST_BOTH_LIBRARIES} clemency)
 
   gtest_add_tests(test_m3inv "" test_m3inv.cpp)
   gtest_add_tests(test_bezier "" test_bezier.cpp)
 
   if(OPENCL_FOUND)
     add_executable       (test_opencl test_opencl.cpp)
-    target_link_libraries(test_opencl ${OPENCL_LIBRARIES} ${GTEST_BOTH_LIBRARIES})
+    target_link_libraries(test_opencl ${OPENCL_LIBRARIES} ${GTEST_BOTH_LIBRARIES} clemency)
   endif()
 
 endif(BUILD_TESTING)

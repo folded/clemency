@@ -267,51 +267,9 @@ static inline std::vector<double> solve2(double a, double b, double c, const dou
   return r;
 }
 
-static inline std::vector<double> solve3(double a, double b, double c, double d, const double zero = 1e-10) {
-  std::vector<double> r;
 
-  if (::fabs(a) < zero) {
-    return solve2(b, c, d, zero);
-  }
 
-  b /= a;
-  c /= a;
-  d /= a;
-
-  double p = c - b*b / 3.0;
-  double q = b * (2.0*b*b - 9.0*c) / 27.0 + d;
-  double p3 = p*p*p;
-  double D = q*q + 4.0*p3 / 27.0;
-  double offset = -b / 3.0;
-
-  if (D > zero) {
-    double z = ::sqrt(D);
-    double u = (-q + z) / 2.0;
-    double v = (-q - z) / 2.0;
-    u = (u >= 0) ? ::pow(u, 1.0/3.0) : -::pow(-u, 1.0/3.0);
-    v = (v >= 0) ? ::pow(v, 1.0/3.0) : -::pow(-v, 1.0/3.0);
-
-    r.push_back(u + v + offset);
-  } else if (D < -zero) {
-    double u = 2.0 * ::sqrt(-p / 3.0);
-    double v = ::acos(-::sqrt(-27.0 / p3) * q / 2.0) / 3.0;
-
-    r.reserve(3);
-
-    r.push_back(u * ::cos(v) + offset);
-    r.push_back(u * ::cos(v + 2.0 * M_PI / 3.0) + offset);
-    r.push_back(u * ::cos(v + 4.0 * M_PI / 3.0) + offset);
-  } else {
-    double u = (q < 0) ? ::pow(-q / 2.0, 1.0 / 3.0) : -::pow(q / 2.0, 1.0 / 3.0);
-
-    r.reserve(2);
-
-    r.push_back(2.0*u + offset);
-    r.push_back(-u + offset);
-  }
-
-  return r;
-}
+std::vector<double> solve3(double a, double b, double c, double d, const double zero = 1e-10);
 
 
 
@@ -488,6 +446,23 @@ public:
   static bool lt(const v3_t &a, const v3_t &b) {
     return std::lexicographical_compare(a.v, a.v+3, b.v, b.v+3);
   }
+
+  // Compute a . (b x c)
+  static double dotcross(const v3_t &a, const v3_t &b, const v3_t &c);
+
+  // test whether point d is above, below or on the plane formed by
+  // the triangle a,b,c.
+  // return: +ve = d is below a,b,c
+  //         -ve = d is above a,b,c
+  //           0 = d is on a,b,c
+  static double orient(const v3_t &a, const v3_t &b, const v3_t &c, const v3_t &d);
+
+  // Volume of a tetrahedron described by 4 points. Will be positive
+  // if the anticlockwise normal of a,b,c is oriented out of the
+  // tetrahedron.
+  //
+  // see: http://mathworld.wolfram.com/Tetrahedron.html
+  static double tetrahedron_volume(const v3_t &a, const v3_t &b, const v3_t &c, const v3_t &d);
 };
 
 static inline v3_t operator*(double a, const v3_t &b) {
