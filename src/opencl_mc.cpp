@@ -22,6 +22,7 @@
 #include <clemency/cl.hpp>
 #include <clemency/geom.hpp>
 #include <clemency/mesh.hpp>
+#include <clemency/mesh_io.hpp>
 #include <clemency/quadric.hpp>
 #include <clemency/config.h>
 
@@ -469,14 +470,16 @@ int main(int argc, char **argv) {
     mesh_t *mesh = mc.take_mesh();
 
     if (dst_file == "-") {
-      mesh->dump(std::cout);
+      gloop::ply::PlyWriter file(true, false);
+      io::write_mesh(std::cout, file, mesh);
     } else {
       std::ofstream outf(dst_file.c_str());
       if (!outf.good()) {
-        std::cerr << "coult not open " << dst_file << " for writing" << std::endl;
+        std::cerr << "could not open " << dst_file << " for writing" << std::endl;
         exit(1);
       }
-      mesh->dump(outf);
+      gloop::ply::PlyWriter file(true, false);
+      io::write_mesh(outf, file, mesh);
     }
 
     delete mesh;

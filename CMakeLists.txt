@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
+add_subdirectory(gloop)
+include_directories(${gloop_SOURCE_DIR}/include)
+
 project(clemency)
 
 set(clemency_VERSION_MAJOR 1)

@@ -11,6 +11,6 @@ endif()
 
 if(OPENCL_FOUND)
   add_executable       (clmc opencl_mc.cpp mc_table.cpp)
-  target_link_libraries(clmc ${Boost_PROGRAM_OPTIONS_LIBRARY} ${OPENCL_LIBRARIES})
+  target_link_libraries(clmc ${Boost_PROGRAM_OPTIONS_LIBRARY} ${OPENCL_LIBRARIES} gloop_model)
 endif()
 

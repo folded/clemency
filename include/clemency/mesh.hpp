@@ -318,25 +318,6 @@ struct triangle_mesh_t {
     }
   }
 
-  void dump(std::ostream &out) {
-    out <<
-      "ply\n" <<
-      "format ascii 1.0\n" <<
-      "element vertex " << vertices.size() << "\n" <<
-      "property double x\n" <<
-      "property double y\n" <<
-      "property double z\n" <<
-      "element face " << face_count << "\n" <<
-      "property list int int vertex_indices\n" <<
-      "end_header\n";
-    for (size_t i = 0; i < vertices.size(); ++i) {
-      out << vertices[i].pos.x << " " << vertices[i].pos.y << " " << vertices[i].pos.z << std::endl;
-    }
-    for (_tri_t *t = face_list.next; t != &face_list; t = t->next) {
-      out << "3 " << t->a << " " << t->b <<  " " << t->c << std::endl;
-    }
-  }
-
   void rewrite_vertex(_tri_t *t, size_t a, size_t b) {
     size_t i = t->vidx(a);
     assert(i != 3);
@@ -577,6 +558,3 @@ mesh_t *merge_meshes(mesh_t *a, mesh_t *b) {
 
   return result;
 }
-
-
-
