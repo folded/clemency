@@ -480,7 +480,7 @@ int main(int argc, char **argv) {
         std::cerr << "could not open " << dst_file << " for writing" << std::endl;
         exit(1);
       }
-      gloop::ply::PlyWriter file(true, false);
+      gloop::ply::PlyWriter file(false, false);
       io::write_mesh(outf, file, mesh);
     }
 
