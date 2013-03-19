@@ -9,6 +9,9 @@ if(OPENCL_FOUND)
   include_directories(${OPENCL_INCLUDE_DIRS})
 endif()
 
+add_executable       (mesh_info mesh_info.cpp)
+target_link_libraries(mesh_info ${Boost_PROGRAM_OPTIONS_LIBRARY} clemency gloop_model)
+
 if(OPENCL_FOUND)
   add_executable       (clmc opencl_mc.cpp mc_table.cpp)
   target_link_libraries(clmc ${Boost_PROGRAM_OPTIONS_LIBRARY} ${OPENCL_LIBRARIES} clemency gloop_model)
