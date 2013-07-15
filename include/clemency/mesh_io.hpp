@@ -35,7 +35,7 @@ namespace io {
         vertex(mesh_t *_mesh) : mesh(_mesh) {
         }
         virtual void next() {
-          mesh->add_vertex(v3_t::zero());
+          mesh->add_vertex(v3d_t::zero());
         }
         virtual void length(int l) {
           if (l > 0) mesh->vertices.reserve(mesh->vertices.size() + l);
@@ -116,7 +116,7 @@ namespace io {
 
         virtual void next() { ++i; }
         virtual int length() { return cnt.size(); }
-        virtual const v3_t &curr() const {  return cnt[i].pos; }
+        virtual const v3d_t &curr() const {  return cnt[i].pos; }
 
         template<int idx>
         struct component : public gloop::stream::writer<double> {

@@ -23,22 +23,22 @@
 TEST(closest_point, closest_point)
 {
   // come up with more tests. these are kind of trivial.
-  qbezier2_t bezier(v2_t::init(0.0, 1.0), v2_t::init(0.0, 0.0), v2_t::init(1.0, 0.0));
-  std::pair<v2_t, double> result;
+  qbezier2d_t bezier(v2d_t::init(0.0, 1.0), v2d_t::init(0.0, 0.0), v2d_t::init(1.0, 0.0));
+  std::pair<v2d_t, double> result;
 
-  result = bezier.closest_point(v2_t::init(0.5, 0.5));
-  EXPECT_EQ(result.first, v2_t::init(0.25, 0.25));
+  result = bezier.closest_point(v2d_t::init(0.5, 0.5));
+  EXPECT_EQ(result.first, v2d_t::init(0.25, 0.25));
   EXPECT_EQ(result.second, ::sqrt(2.0 * .25 * .25));
 
-  result = bezier.closest_point(v2_t::init(0.0, 0.0));
-  EXPECT_EQ(result.first, v2_t::init(0.25, 0.25));
+  result = bezier.closest_point(v2d_t::init(0.0, 0.0));
+  EXPECT_EQ(result.first, v2d_t::init(0.25, 0.25));
   EXPECT_EQ(result.second, -::sqrt(2.0 * .25 * .25));
 
-  result = bezier.closest_point(v2_t::init(2.0, 0.0));
-  EXPECT_EQ(result.first, v2_t::init(1.0, 0.0));
+  result = bezier.closest_point(v2d_t::init(2.0, 0.0));
+  EXPECT_EQ(result.first, v2d_t::init(1.0, 0.0));
   EXPECT_EQ(result.second, 1.0);
 
-  result = bezier.closest_point(v2_t::init(0.0, 2.0));
-  EXPECT_EQ(result.first, v2_t::init(0.0, 1.0));
+  result = bezier.closest_point(v2d_t::init(0.0, 2.0));
+  EXPECT_EQ(result.first, v2d_t::init(0.0, 1.0));
   EXPECT_EQ(result.second, 1.0);
 }

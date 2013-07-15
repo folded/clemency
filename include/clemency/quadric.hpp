@@ -27,9 +27,9 @@ struct quadric_t {
   quadric_t() {
   }
 
-  quadric_t(v3_t n, v3_t p, double d_off, double w = 1.0) {
+  quadric_t(v3d_t n, v3d_t p, double d_off, double w = 1.0) {
     n = n.normalize();
-    double d = - v3_t::dot(n, p) + d_off;
+    double d = - v3d_t::dot(n, p) + d_off;
     coef[0] = n.x * n.x * w;
     coef[1] = n.x * n.y * w;
     coef[2] = n.y * n.y * w;
@@ -42,23 +42,23 @@ struct quadric_t {
     coef[9] =   d *   d * w;
   }
 
-  m3_t A() const {
-    return m3_t::init(
+  m3d_t A() const {
+    return m3d_t::init(
       coef[0], coef[1], coef[3],
       coef[1], coef[2], coef[4],
       coef[3], coef[4], coef[5]);
   }
 
-  v3_t b() const {
-    return v3_t::init(coef[6], coef[7], coef[8]);
+  v3d_t b() const {
+    return v3d_t::init(coef[6], coef[7], coef[8]);
   }
 
   double c() const {
     return coef[9];
   }
 
-  bool minimize(v3_t &v) const {
-    m3_t Ainv;
+  bool minimize(v3d_t &v) const {
+    m3d_t Ainv;
     double det;
     if (!A().invert(Ainv, det)) {
       return false;
@@ -69,7 +69,7 @@ struct quadric_t {
     return true;
   }
 
-  double eval(const v3_t &v) const {
+  double eval(const v3d_t &v) const {
     return
           coef[0] * v.x * v.x +
       2 * coef[1] * v.y * v.x +

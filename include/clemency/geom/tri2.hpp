@@ -17,5 +17,43 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include <clemency/config.h>
-#include <clemency/geom.hpp>
+#pragma once
+
+
+
+#include "v2.hpp"
+
+
+
+template<typename num_t>
+class tri2_t {
+public:
+  union {
+    v2_t<num_t> v[3];
+    struct {
+      v2_t<num_t> a,b,c;
+    };
+  };
+
+  tri2_t(const v2_t<num_t> &_a, const v2_t<num_t> &_b, const v2_t<num_t> &_c) : a(_a), b(_b), c(_c) {
+  }
+
+  // not implemented
+  bool contains(const v2_t<num_t> &p) const;
+
+  // not implemented
+  v2_t<num_t> closest_point(const v2_t<num_t> &p) const;
+
+  double distancesq(const v2_t<num_t> &p) const {
+    return (p - closest_point(p)).lengthsq();
+  }
+
+  double distance(const v2_t<num_t> &p) const {
+    return (p - closest_point(p)).length();
+  }
+};
+
+
+
+typedef tri2_t<double> tri2d_t;
+typedef tri2_t<float>  tri2f_t;

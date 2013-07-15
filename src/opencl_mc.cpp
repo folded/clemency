@@ -107,8 +107,8 @@ struct marching_cubes_t {
     if (mesh) delete mesh;
   }
 
-  v3_t position_of_vertex(uint16_t x, uint16_t y, uint16_t z) {
-    return v3_t::init(px[x], py[y], pz[z]);
+  v3d_t position_of_vertex(uint16_t x, uint16_t y, uint16_t z) {
+    return v3d_t::init(px[x], py[y], pz[z]);
   }
 
   edgeint_t decode_edge(uint16_t x, uint16_t y, uint16_t z, uint8_t code) {
@@ -131,7 +131,7 @@ struct marching_cubes_t {
     if (i != int_idx.end()) return (*i).second;
     size_t r = int_idx[e] = mesh->vertices.size();
 
-    mesh->vertices.push_back(typename mesh_t::vert_t(v3_t::zero()));
+    mesh->vertices.push_back(typename mesh_t::vert_t(v3d_t::zero()));
 
     return r;
   }
@@ -192,6 +192,7 @@ struct marching_cubes_t {
           queue.sync(cl::cmd_write_buffer(gy_mem, CL_FALSE, 0, Wy * sizeof(float), gy.get()));
 
           for (size_t _x = 0; _x < Nx; _x += block0-1) {
+            std::cerr << "block: " << _x << "," << _y << "," << _z << std::endl;
             const size_t Wx = std::min(block0, Nx - _x);
             for (size_t i = 0; i < Wx; ++i) gx[i] = (float)px[_x+i];
             queue.sync(cl::cmd_write_buffer(gx_mem, CL_FALSE, 0, Wx * sizeof(float), gx.get()));
@@ -270,8 +271,8 @@ struct marching_cubes_t {
         for (size_t j = 0; j < N; ++j) {
           edgeint_t &e = vert_calc[i+j].first;
 
-          v3_t a_pos =  position_of_vertex(e.a[0], e.a[1], e.a[2]);
-          v3_t b_pos =  position_of_vertex(e.b[0], e.b[1], e.b[2]);
+          v3d_t a_pos =  position_of_vertex(e.a[0], e.a[1], e.a[2]);
+          v3d_t b_pos =  position_of_vertex(e.b[0], e.b[1], e.b[2]);
 
           a[j].x = (float)a_pos.x; a[j].y = (float)a_pos.y; a[j].z = (float)a_pos.z;
           b[j].x = (float)b_pos.x; b[j].y = (float)b_pos.y; b[j].z = (float)b_pos.z;
@@ -285,13 +286,13 @@ struct marching_cubes_t {
         queue.sync(cl::cmd_read_buffer(c_mem, CL_FALSE, 0, N * sizeof(cl_float3), c.get()));
 
         for (size_t j = 0; j < N; ++j) {
-          mesh->vertices[vert_calc[i+j].second].pos = v3_t::init(c[j].x, c[j].y, c[j].z);
+          mesh->vertices[vert_calc[i+j].second].pos = v3d_t::init(c[j].x, c[j].y, c[j].z);
         }
       }
     }
   }
 
-  void grid_eval(cl::program_t &prog, const aabb_t &aabb, const size_t nx, const size_t ny, const size_t nz, size_t block0, size_t block1, size_t refine) {
+  void grid_eval(cl::program_t &prog, const aabb3d_t &aabb, const size_t nx, const size_t ny, const size_t nz, size_t block0, size_t block1, size_t refine) {
     assert(nx < 65535);
     assert(ny < 65535);
     assert(nz < 65535);
@@ -315,14 +316,9 @@ struct marching_cubes_t {
 
 
 
-std::ostream &operator<<(std::ostream &out, const aabb_t &aabb) {
-  out << aabb.xl() << "," << aabb.yl() << "," << aabb.zl() << ":" << aabb.xh() << "," << aabb.yh() << "," << aabb.zh();
-  return out;
-}
-
 void validate(boost::any &v,
               const std::vector<std::string> &values,
-              aabb_t *,
+              aabb3d_t *,
               int)  {
   opt::validators::check_first_occurrence(v);
   const std::string &s = opt::validators::get_single_string(values);
@@ -331,7 +327,7 @@ void validate(boost::any &v,
   if (sscanf(s.c_str(), "%lg,%lg,%lg:%lg,%lg,%lg", &xl, &yl, &zl, &xh, &yh, &zh) != 6) {
     throw opt::validation_error(opt::validation_error::invalid_option_value);
   }
-  v = boost::any(aabb_t::initWithBounds(v3_t::init(xl,yl,zl), v3_t::init(xh,yh,zh)));
+  v = boost::any(aabb3d_t::initWithPoints(v3d_t::init(xl,yl,zl), v3d_t::init(xh,yh,zh)));
 }
 
 int main(int argc, char **argv) {
@@ -340,24 +336,24 @@ int main(int argc, char **argv) {
   size_t refine;
   std::string src_file;
   std::string dst_file;
-  aabb_t aabb;
-  aabb_t aabb0 = aabb_t::initWithBounds(v3_t::init(-1.0, -1.0, -1.0), v3_t::init(+1.0, +1.0, +1.0));
+  aabb3d_t aabb;
+  aabb3d_t aabb0 = aabb3d_t::initWithPoints(v3d_t::init(-1.0, -1.0, -1.0), v3d_t::init(+1.0, +1.0, +1.0));
 
   opt::options_description generic;
   generic.add_options()
-    ("help,h",                                                       "Print help and exit")
-    ("version,v",                                                    "Print version string")
-    ("cpu,c",                                                        "Execute on CPU")
-    ("list,l",                                                       "List available OpenCL devices")
-    ("cl-opts,C", opt::value<std::vector<std::string> >(),           "Set OpenCL compiler option")
-    ("grid,g",    opt::value<size_t>(&grid)->default_value(256),     "Size of marching cubes grid")
-    ("gx",        opt::value<size_t>(&grid_x)->default_value(0),     "X dimension of mc grid")
-    ("gy",        opt::value<size_t>(&grid_y)->default_value(0),     "Y dimension of mc grid")
-    ("gz",        opt::value<size_t>(&grid_z)->default_value(0),     "Z dimension of mc grid")
-    ("aabb,a",    opt::value<aabb_t>(&aabb)->default_value(aabb0),   "aabb of marching cubes grid")
-    ("block0",    opt::value<size_t>(&block0)->default_value(256),   "Block size for grid evaluation")
-    ("block1",    opt::value<size_t>(&block1)->default_value(1024),  "Block size for intersection refinement")
-    ("refine,r",  opt::value<size_t>(&refine)->default_value(10),    "Number of refinement steps")
+    ("help,h",                                                            "Print help and exit")
+    ("version,v",                                                         "Print version string")
+    ("cpu,c",                                                             "Execute on CPU")
+    ("list,l",                                                            "List available OpenCL devices")
+    ("cl-opts,C", opt::value<std::vector<std::string> >(),                "Set OpenCL compiler option")
+    ("grid,g",    opt::value<size_t>(&grid)->default_value(256),          "Size of marching cubes grid")
+    ("gx",        opt::value<size_t>(&grid_x)->default_value(0),          "X dimension of mc grid")
+    ("gy",        opt::value<size_t>(&grid_y)->default_value(0),          "Y dimension of mc grid")
+    ("gz",        opt::value<size_t>(&grid_z)->default_value(0),          "Z dimension of mc grid")
+    ("aabb,a",    opt::value<aabb3d_t>(&aabb)->default_value(aabb0),      "AABB of marching cubes grid")
+    ("block0",    opt::value<size_t>(&block0)->default_value(256),        "Block size for grid evaluation")
+    ("block1",    opt::value<size_t>(&block1)->default_value(1024),       "Block size for intersection refinement")
+    ("refine,r",  opt::value<size_t>(&refine)->default_value(10),         "Number of refinement steps")
     ("output,o",  opt::value<std::string>(&dst_file)->default_value("-"), "Ouput file (- for stdout)")
     ;
 

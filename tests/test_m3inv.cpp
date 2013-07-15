@@ -22,17 +22,17 @@
 
 TEST(matrix_det, matrix_det)
 {
-  m3_t mat = m3_t::init(+1, +3, +0,
-                        +2, -2, +1,
-                        -4, +1, -1);
+  m3d_t mat = m3d_t::init(+1, +3, +0,
+                          +2, -2, +1,
+                          -4, +1, -1);
   EXPECT_EQ(mat.determinant(), -5);
 }
 
 TEST(matrix_mdet, matrix_mdet)
 {
-  m3_t mat = m3_t::init(+1, +3, +0,
-                        +2, -2, +1,
-                        -4, +1, -1);
+  m3d_t mat = m3d_t::init(+1, +3, +0,
+                          +2, -2, +1,
+                          -4, +1, -1);
   EXPECT_EQ(mat.mdet(0,0), 1);
   EXPECT_EQ(mat.mdet(1,0), 2);
   EXPECT_EQ(mat.mdet(2,0), -6);
@@ -48,12 +48,12 @@ TEST(matrix_mdet, matrix_mdet)
 
 TEST(matrix_inv, matrix_inv)
 {
-  m3_t mat = m3_t::init(+1, +3, +0,
-                        +2, -2, +1,
-                        -4, +1, -1);
-  m3_t inv;
+  m3d_t mat = m3d_t::init(+1, +3, +0,
+                          +2, -2, +1,
+                          -4, +1, -1);
+  m3d_t inv;
   double det;
   EXPECT_TRUE(mat.invert(inv, det));
   EXPECT_EQ(det, -5);
-  EXPECT_TRUE(m3_t::ident().eq(mat * inv));
+  EXPECT_TRUE(m3d_t::ident().eq(mat * inv));
 }

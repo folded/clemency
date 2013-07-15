@@ -23,7 +23,6 @@
 
 #include <clemency/mesh.hpp>
 #include <clemency/mesh_io.hpp>
-#include <clemency/rtree.hpp>
 #include <clemency/volume_integrals.hpp>
 
 #include <fstream>
@@ -110,9 +109,15 @@ int main(int argc, char **argv) {
       exit(1);
     }
 
-    std::cout << "closed manifold: "
-              << (mesh->is_closed_manifold() ? "true" : "false")
-              << std::endl;
+    for (size_t i = 0; i < mesh->vertices.size(); ++i) {
+      mesh->vertices[i].pos.x = -mesh->vertices[i].pos.x;
+    }
+    for (mesh_t::face_iter i = mesh->fbegin(); i != mesh->fend(); ++i) {
+      std::swap(i->a, i->b);
+    }
+
+    gloop::ply::PlyWriter out_file(true, false);
+    io::write_mesh(std::cout, out_file, mesh);
 
     delete mesh;
 

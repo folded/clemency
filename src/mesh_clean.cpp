@@ -46,6 +46,99 @@
 
 namespace opt = boost::program_options;
 
+typedef triangle_mesh_t<vert_t, tri_t> mesh_t;
+
+typedef rtree_node_t<mesh_t::tri_t> rtree_t;
+
+
+
+struct closest_point_info_t {
+  double current_dist2;
+  double orientation;
+  mesh_t::tri_t *closest_tri;
+  v3d_t closest_point;
+
+  void _find(const rtree_t *rt,
+             const mesh_t::vlookup_t &vlookup,
+             const v3d_t &pt) {
+
+    std::vector<std::pair<double, rtree_t *> > sorted_children;
+
+    for (size_t i = 0; i < rt->data.size(); ++i) {
+      mesh_t::tri_t *t = rt->data[i];
+      tri3d_t t_pt(vlookup(t->a), vlookup(t->b), vlookup(t->c));
+      v3d_t c = t_pt.closest_point(pt);
+
+      double d2 = (c - pt).lengthsq();
+      if (d2 < current_dist2) {
+        double o = t_pt.orient(pt);
+        orientation = o;
+        closest_tri = t;
+        closest_point = c;
+        current_dist2 = d2;
+      }
+    }
+
+    for (rtree_t *ch = rt->child; ch != NULL; ch = ch->sibling) {
+      double bbox_dist2 = ch->bbox.distancesq(pt);
+      if (bbox_dist2 > current_dist2) continue;
+      sorted_children.push_back(std::make_pair(bbox_dist2, ch));
+    }
+
+    std::sort(sorted_children.begin(), sorted_children.end());
+
+    for (size_t i = 0; i < sorted_children.size(); ++i) {
+      if (sorted_children[i].first > current_dist2) break;
+      _find(sorted_children[i].second, vlookup, pt);
+    }
+  }
+
+  void find(const rtree_t *rt, const mesh_t::vlookup_t &vlookup, const v3d_t &pt) {
+    closest_tri = NULL;
+    current_dist2 = std::numeric_limits<double>::max();
+    orientation = 0.0;
+    _find(rt, vlookup, pt);
+  }
+};
+
+
+
+void process(mesh_t *mesh) {
+  rtree_t *rtree = rtree_t::construct_STR(mesh->fbegin(), mesh->fend(), mesh->aabb_getter(), 4, 4);
+  std::cerr << "mesh bounds: " << rtree->bbox << std::endl;
+
+  const double STEP = 0.05;
+  const double RAD = 0.25;
+  size_t tag = ++mesh->curr_tag;
+  for (double x = rtree->bbox.xl(); x <= rtree->bbox.xh(); x += STEP) {
+    std::cerr << "x=" << x << std::endl;
+    for (double y = rtree->bbox.yl(); y <= rtree->bbox.yh(); y += STEP) {
+      for (double z = rtree->bbox.zl(); z <= rtree->bbox.zh(); z += STEP) {
+        closest_point_info_t info;
+        info.find(rtree, mesh->vertex_getter(), v3d_t::init(x, y, z));
+        double d = sqrt(info.current_dist2);
+        if (d > RAD) {
+          info.closest_tri->tag = tag;
+          double n_steps = floor((d-RAD) / STEP);
+          if (n_steps > 1) z += STEP * (n_steps-1);
+        }
+      }
+    }
+  }
+  std::vector<mesh_t::tri_t *> tagged_faces;
+  for (mesh_t::face_iter iter = mesh->fbegin(); iter != mesh->fend(); ++iter) {
+    if (iter->tag == tag) {
+      tagged_faces.push_back(&*iter);
+    }
+  }
+  mesh_t *submesh = mesh->submesh(tagged_faces.begin(), tagged_faces.end());
+
+  gloop::ply::PlyWriter file(true, false);
+  io::write_mesh(std::cout, file, submesh);
+}
+
+
+
 int main(int argc, char **argv) {
   std::string src_file;
 
@@ -90,7 +183,6 @@ int main(int argc, char **argv) {
   }
 
   try {
-    typedef triangle_mesh_t<vert_t, tri_t> mesh_t;
     mesh_t *mesh;
 
     gloop::ply::PlyReader file;
@@ -110,9 +202,7 @@ int main(int argc, char **argv) {
       exit(1);
     }
 
-    std::cout << "closed manifold: "
-              << (mesh->is_closed_manifold() ? "true" : "false")
-              << std::endl;
+    process(mesh);
 
     delete mesh;
 
