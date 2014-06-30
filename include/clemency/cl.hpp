@@ -356,6 +356,7 @@ namespace cl {
     }
 
     cl_int operator()(cl_command_queue queue, size_t n_wait, const cl_event *wait, cl_event *event) const {
+      std::cerr << "clEnqueueWriteBuffer(" << queue << ", " << buffer << ", " << blocking << ", " << offset<< ", " << size << ", " << ptr << ", " << n_wait << ", " << wait << ", " << event << ");" << std::endl;
       return clEnqueueWriteBuffer(queue, buffer, blocking, offset, size, ptr, n_wait, wait, event);
     }
   };
@@ -516,9 +517,11 @@ namespace cl {
     event_t &operator=(const event_t &event) {
       if (this != &event) {
         if (event.id) {
+          std::cerr << "retain " << event.id << std::endl;
           clRetainEvent(event.id);
         }
         if (id) {
+          std::cerr << "release " << id << std::endl;
           clReleaseEvent(id);
         }
         id = event.id;
@@ -530,17 +533,20 @@ namespace cl {
     }
 
     event_t(const event_t &event) : id(0) {
+      std::cerr << "copy ctor: " << &event << std::endl;
       *this = event;
     }
 
     event_t(cl_event _id) : id(_id) {
       if (id) {
+        std::cerr << "retain " << id << std::endl;
         clRetainEvent(id);
       }
     }
 
     ~event_t() {
       if (id) {
+        std::cerr << "release " << id << std::endl;
         clReleaseEvent(id);
       }
     }
@@ -556,10 +562,13 @@ namespace cl {
     }
 
     void wait() const {
+      std::cerr << "clWaitForEvents(1, " << &id << ") id=" << id << std::endl;
+      std::cerr << "event refcount: " << refcount() << std::endl;
       cl_int result = clWaitForEvents(1, &id);
       if (result == CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST) {
         _check(status());
       }
+      std::cerr << "clWaitForEvents result: " << result << std::endl;
       _check(result);
     }
 
@@ -907,6 +916,7 @@ namespace cl {
     event_t async(const cmd_t &cmd) {
       event_t ev;
       _check(cmd(id, 0, NULL, &(ev.id)));
+      std::cerr << "here..." << ev.id << std::endl;
       return ev;
     }
 

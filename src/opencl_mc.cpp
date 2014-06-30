@@ -154,8 +154,12 @@ struct marching_cubes_t {
     const size_t Nz = pz.size();
 
     cl::ctx_t ctx(prog.context());
+    std::cerr << "ctx="<<ctx<< std::endl;
+    std::vector<cl_device_id> devices = ctx.devices();
+    std::cerr << "n_devices=" << devices.size() << std::endl;
+    std::cerr << "ctx.device(0)="<<ctx.device(0)<< std::endl;
     cl::queue_t queue(ctx, ctx.device(0));
-
+    std::cerr << "made queue" << std::endl;
     init_mesh();
 
     {
