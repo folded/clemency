@@ -276,11 +276,11 @@ bool aabb3_t<num_t>::intersects(tri3_t<num_t> tri) const {
   if (!intersectsTriangle_axisTest_3<1,0,0,0>(*this, tri)) return false;
   if (!intersectsTriangle_axisTest_3<1,0,0,1>(*this, tri)) return false;
   if (!intersectsTriangle_axisTest_3<1,0,0,2>(*this, tri)) return false;
-                                                          
+
   if (!intersectsTriangle_axisTest_3<0,1,0,0>(*this, tri)) return false;
   if (!intersectsTriangle_axisTest_3<0,1,0,1>(*this, tri)) return false;
   if (!intersectsTriangle_axisTest_3<0,1,0,2>(*this, tri)) return false;
-                                                          
+
   if (!intersectsTriangle_axisTest_3<0,0,1,0>(*this, tri)) return false;
   if (!intersectsTriangle_axisTest_3<0,0,1,1>(*this, tri)) return false;
   if (!intersectsTriangle_axisTest_3<0,0,1,2>(*this, tri)) return false;
