@@ -100,27 +100,27 @@ public:
   }
 
   bool touchesFace(const aabb2_t &bbox) const {
-    num_t dx = fabs(mid.x - bbox.mid.x) - extent.x + bbox.extent.x;
-    num_t dy = fabs(mid.y - bbox.mid.y) - extent.y + bbox.extent.y;
+    num_t dx = std::abs(mid.x - bbox.mid.x) - extent.x + bbox.extent.x;
+    num_t dy = std::abs(mid.y - bbox.mid.y) - extent.y + bbox.extent.y;
     return
       (dx == num_t(0) && dy < num_t(0)) ||
       (dy == num_t(0) && dx < num_t(0));
   }
 
   bool intersects(const aabb2_t &bbox) const {
-    return fabs(mid.x - bbox.mid.x) < extent.x + bbox.extent.x ||
-           fabs(mid.y - bbox.mid.y) < extent.y + bbox.extent.y;
+    return std::abs(mid.x - bbox.mid.x) < extent.x + bbox.extent.x ||
+           std::abs(mid.y - bbox.mid.y) < extent.y + bbox.extent.y;
   }
 
   bool contains(const aabb2_t &bbox) const {
-    return fabs(mid.x - bbox.mid.x) < extent.x - bbox.extent.x &&
-           fabs(mid.y - bbox.mid.y) < extent.y - bbox.extent.y;
+    return std::abs(mid.x - bbox.mid.x) < extent.x - bbox.extent.x &&
+           std::abs(mid.y - bbox.mid.y) < extent.y - bbox.extent.y;
   }
 
   bool contains(const v2_t<num_t> &p) const {
     return
-      fabs(p.x - mid.x) < extent.x &&
-      fabs(p.y - mid.y) < extent.y;
+      std::abs(p.x - mid.x) < extent.x &&
+      std::abs(p.y - mid.y) < extent.y;
   }
 
   bool intersects(const v2_t<num_t> &p) const {
@@ -129,14 +129,14 @@ public:
 
   bool contains(const circle_t<num_t> &sp) const {
     return
-      abs(sp.v.x - mid.x) < extent.x - sp.r &&
-      abs(sp.v.y - mid.y) < extent.y - sp.r;
+      std::abs(sp.v.x - mid.x) < extent.x - sp.r &&
+      std::abs(sp.v.y - mid.y) < extent.y - sp.r;
   }
 
   bool intersects(const circle_t<num_t> &sp) const {
     num_t r = num_t(0);
     for (unsigned i = 0; i < 2; ++i) {
-      num_t t = fabs(sp.v.v[i] - mid.v[i]) - extent.v[i]; if (t > num_t(0)) r += t*t;
+      num_t t = std::abs(sp.v.v[i] - mid.v[i]) - extent.v[i]; if (t > num_t(0)) r += t*t;
     }
     return r <= sp.r * sp.r;
   }
@@ -144,7 +144,7 @@ public:
   num_t distancesq(const v2_t<num_t> &p) const {
     num_t dist = num_t(0);
     for (size_t i = 0; i < 2; ++i) {
-      num_t d = fabs(p.v[i] - mid.v[i]) - extent.v[i];
+      num_t d = std::abs(p.v[i] - mid.v[i]) - extent.v[i];
       if (d > num_t(0)) dist += d*d;
     }
     return dist;

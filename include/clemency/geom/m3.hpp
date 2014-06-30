@@ -117,7 +117,7 @@ public:
 
   bool invert(m3_t &inv, num_t &det) const {
     det = determinant();
-    if (fabs(det) < 1e-10) return false;
+    if (std::abs(det) < 1e-10) return false;
     num_t d = num_t(1)/det;
 
     inv.m00 = +d*mdet(0,0); inv.m01 = -d*mdet(1,0); inv.m02 = +d*mdet(2,0);
@@ -139,7 +139,7 @@ public:
   }
 
   bool eq(const m3_t &o, num_t eps = 1e-10) const {
-    for (size_t i = 0; i < 9; ++i) if (fabs(v[i] - o.v[i]) > eps) return false;
+    for (size_t i = 0; i < 9; ++i) if (std::abs(v[i] - o.v[i]) > eps) return false;
     return true;
   }
 

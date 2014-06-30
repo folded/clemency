@@ -84,7 +84,7 @@ struct v3_t {
   }
 
   v3_t abs() const {
-    return v3_t::init(::fabs(x), ::fabs(y), ::fabs(z));
+    return v3_t::init(std::abs(x), std::abs(y), std::abs(z));
   }
 
   v2_t<num_t> project(int axis) const {

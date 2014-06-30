@@ -76,6 +76,10 @@ struct v2_t {
     return dot(*this, *this);
   }
 
+  v2_t abs() const {
+    return v2_t::init(std::abs(x), std::abs(y));
+  }
+
   v2_t scale(num_t s) const {
     return init(x * s, y * s);
   }

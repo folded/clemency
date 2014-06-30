@@ -112,9 +112,9 @@ public:
   }
 
   bool touchesFace(const aabb3_t &bbox) const {
-    num_t dx = fabs(mid.x - bbox.mid.x) - extent.x + bbox.extent.x;
-    num_t dy = fabs(mid.y - bbox.mid.y) - extent.y + bbox.extent.y;
-    num_t dz = fabs(mid.z - bbox.mid.z) - extent.z + bbox.extent.z;
+    num_t dx = std::abs(mid.x - bbox.mid.x) - extent.x + bbox.extent.x;
+    num_t dy = std::abs(mid.y - bbox.mid.y) - extent.y + bbox.extent.y;
+    num_t dz = std::abs(mid.z - bbox.mid.z) - extent.z + bbox.extent.z;
     return
       (dx == num_t(0) && dy < num_t(0) && dz < num_t(0)) ||
       (dy == num_t(0) && dx < num_t(0) && dz < num_t(0)) ||
@@ -122,22 +122,22 @@ public:
   }
 
   bool intersects(const aabb3_t &bbox) const {
-    return fabs(mid.x - bbox.mid.x) < extent.x + bbox.extent.x ||
-           fabs(mid.y - bbox.mid.y) < extent.y + bbox.extent.y ||
-           fabs(mid.z - bbox.mid.z) < extent.z + bbox.extent.z;
+    return std::abs(mid.x - bbox.mid.x) < extent.x + bbox.extent.x ||
+           std::abs(mid.y - bbox.mid.y) < extent.y + bbox.extent.y ||
+           std::abs(mid.z - bbox.mid.z) < extent.z + bbox.extent.z;
   }
 
   bool contains(const aabb3_t &bbox) const {
-    return fabs(mid.x - bbox.mid.x) < extent.x - bbox.extent.x &&
-           fabs(mid.y - bbox.mid.y) < extent.y - bbox.extent.y &&
-           fabs(mid.z - bbox.mid.z) < extent.z - bbox.extent.z;
+    return std::abs(mid.x - bbox.mid.x) < extent.x - bbox.extent.x &&
+           std::abs(mid.y - bbox.mid.y) < extent.y - bbox.extent.y &&
+           std::abs(mid.z - bbox.mid.z) < extent.z - bbox.extent.z;
   }
 
   bool contains(const v3_t<num_t> &p) const {
     return
-      fabs(p.x - mid.x) < extent.x &&
-      fabs(p.y - mid.y) < extent.y &&
-      fabs(p.z - mid.z) < extent.z;
+      std::abs(p.x - mid.x) < extent.x &&
+      std::abs(p.y - mid.y) < extent.y &&
+      std::abs(p.z - mid.z) < extent.z;
   }
 
   bool intersects(const v3_t<num_t> &p) const {
@@ -152,15 +152,15 @@ public:
 
   bool contains(const sphere_t<num_t> &sp) const {
     return
-      abs(sp.v.x - mid.x) < extent.x - sp.r &&
-      abs(sp.v.y - mid.y) < extent.y - sp.r &&
-      abs(sp.v.z - mid.z) < extent.z - sp.r;
+      std::abs(sp.v.x - mid.x) < extent.x - sp.r &&
+      std::abs(sp.v.y - mid.y) < extent.y - sp.r &&
+      std::abs(sp.v.z - mid.z) < extent.z - sp.r;
   }
 
   bool intersects(const sphere_t<num_t> &sp) const {
     num_t r = num_t(0);
     for (unsigned i = 0; i < 3; ++i) {
-      num_t t = fabs(sp.v.v[i] - mid.v[i]) - extent.v[i]; if (t > num_t(0)) r += t*t;
+      num_t t = std::abs(sp.v.v[i] - mid.v[i]) - extent.v[i]; if (t > num_t(0)) r += t*t;
     }
     return r <= sp.r * sp.r;
   }
@@ -168,7 +168,7 @@ public:
   num_t distancesq(const v3_t<num_t> &p) const {
     num_t dist = num_t(0);
     for (size_t i = 0; i < 3; ++i) {
-      num_t d = fabs(p.v[i] - mid.v[i]) - extent.v[i];
+      num_t d = std::abs(p.v[i] - mid.v[i]) - extent.v[i];
       if (d > num_t(0)) dist += d*d;
     }
     return dist;
@@ -258,7 +258,7 @@ bool intersectsTriangle_axisTest_2(const aabb3_t<num_t> &aabb, const tri3_t<num_
 template<typename num_t>
 bool intersectsTriangle_axisTest_1(const aabb3_t<num_t> &aabb, const tri3_t<num_t> &tri) {
   v3_t<num_t> n = v3_t<num_t>::cross(tri.v[1] - tri.v[0], tri.v[2] - tri.v[0]);
-  num_t d1 = fabs(v3_t<num_t>::dot(n, tri.v[0]));
+  num_t d1 = std::abs(v3_t<num_t>::dot(n, tri.v[0]));
   num_t d2 = v3_t<num_t>::dot(n.abs(), aabb.extent);
   return d1 <= d2;
 }

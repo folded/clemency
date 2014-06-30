@@ -45,7 +45,7 @@ public:
   static quat_t rot(num_t angle, const v3_t<num_t> &axis) {
     quat_t r;
     num_t len = axis.length();
-    if (fabs(len) > 1e-10) {
+    if (std::abs(len) > num_t(1e-10)) {
       num_t omega = -0.5 * angle;
       num_t c = cos(omega);
       num_t s = sin(omega);

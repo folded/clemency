@@ -29,7 +29,7 @@
 static inline std::vector<double> solve1(double a, double b, const double zero = 1e-10) {
     std::vector<double> r;
 
-    if (::fabs(a) > zero) {
+    if (std::abs(a) > zero) {
       r.push_back(-b / a);
     }
 
@@ -39,7 +39,7 @@ static inline std::vector<double> solve1(double a, double b, const double zero =
 static inline std::vector<double> solve2(double a, double b, double c, const double zero = 1e-10) {
   std::vector<double> r;
 
-  if (::fabs(a) < zero) {
+  if (std::abs(a) < zero) {
     return solve1(b, c, zero);
   }
 
@@ -62,7 +62,7 @@ static inline std::vector<double> solve2(double a, double b, double c, const dou
 static inline std::vector<double> solve3(double a, double b, double c, double d, const double zero = 1e-10) {
   std::vector<double> r;
 
-  if (::fabs(a) < zero) {
+  if (std::abs(a) < zero) {
     return solve2(b, c, d, zero);
   }
 
