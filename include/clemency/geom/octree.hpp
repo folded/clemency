@@ -57,7 +57,7 @@ public:
     return bbox.corner(c);
   }
 
-  void split(octree_t *node, const v3_t<num_t> &expand = v3_t<num_t>::zero()) {
+  void split(const v3_t<num_t> &expand = v3_t<num_t>::zero()) {
     if (children[0]) throw std::runtime_error("node already split");
 
     v3_t<num_t> lo = bbox.mid - bbox.extent;
