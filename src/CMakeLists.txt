@@ -18,8 +18,10 @@ target_link_libraries(mesh_clean ${Boost_PROGRAM_OPTIONS_LIBRARY} clemency gloop
 add_executable       (flip flip.cpp)
 target_link_libraries(flip ${Boost_PROGRAM_OPTIONS_LIBRARY} clemency gloop_model)
 
+add_executable       (isosurface isosurface.cpp)
+target_link_libraries(isosurface ${Boost_PROGRAM_OPTIONS_LIBRARY} clemency gloop_model)
+
 if(OPENCL_FOUND)
   add_executable       (clmc opencl_mc.cpp mc_table.cpp)
   target_link_libraries(clmc ${Boost_PROGRAM_OPTIONS_LIBRARY} ${OPENCL_LIBRARIES} clemency gloop_model)
 endif()
-
