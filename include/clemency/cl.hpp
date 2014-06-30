@@ -515,8 +515,12 @@ namespace cl {
 
     event_t &operator=(const event_t &event) {
       if (this != &event) {
-        if (event.id) clRetainEvent(event.id);
-        if (id) clReleaseEvent(id);
+        if (event.id) {
+          clRetainEvent(event.id);
+        }
+        if (id) {
+          clReleaseEvent(id);
+        }
         id = event.id;
       }
       return *this;
@@ -530,11 +534,15 @@ namespace cl {
     }
 
     event_t(cl_event _id) : id(_id) {
-      clRetainEvent(id);
+      if (id) {
+        clRetainEvent(id);
+      }
     }
 
     ~event_t() {
-      if (id) clReleaseEvent(id);
+      if (id) {
+        clReleaseEvent(id);
+      }
     }
 
     cl_uint         refcount() const { return info_t::get<cl_uint>(id, CL_EVENT_REFERENCE_COUNT);         }
@@ -548,7 +556,11 @@ namespace cl {
     }
 
     void wait() const {
-      _check(clWaitForEvents(1, &id));
+      cl_int result = clWaitForEvents(1, &id);
+      if (result == CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST) {
+        _check(status());
+      }
+      _check(result);
     }
 
     operator cl_event() const { return id; }

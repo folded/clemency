@@ -166,10 +166,11 @@ struct marching_cubes_t {
       boost::scoped_array<float> gy(new float[block0]);
       boost::scoped_array<float> gz(new float[block0]);
 
-      cl::mem_t gx_mem = ctx.create_buffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, block0 * sizeof(float), gx.get());
-      cl::mem_t gy_mem = ctx.create_buffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, block0 * sizeof(float), gy.get());
-      cl::mem_t gz_mem = ctx.create_buffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, block0 * sizeof(float), gz.get());
-      cl::mem_t out_mem = ctx.create_buffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, block0*block0*block0, out.get());
+      cl::mem_t gx_mem = ctx.create_buffer(CL_MEM_READ_ONLY, block0 * sizeof(float), NULL);
+      cl::mem_t gy_mem = ctx.create_buffer(CL_MEM_READ_ONLY, block0 * sizeof(float), NULL);
+      cl::mem_t gz_mem = ctx.create_buffer(CL_MEM_READ_ONLY, block0 * sizeof(float), NULL);
+
+      cl::mem_t out_mem = ctx.create_buffer(CL_MEM_READ_WRITE, block0*block0*block0, NULL);
 
       const size_t Py = block0;
       const size_t Pz = block0*block0;
@@ -254,9 +255,9 @@ struct marching_cubes_t {
       boost::scoped_array<cl_float3> b(new cl_float3[block1]);
       boost::scoped_array<cl_float3> c(new cl_float3[block1]);
 
-      cl::mem_t a_mem = ctx.create_buffer(CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR, block1 * sizeof(cl_float3), a.get());
-      cl::mem_t b_mem = ctx.create_buffer(CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR, block1 * sizeof(cl_float3), b.get());
-      cl::mem_t c_mem = ctx.create_buffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, block1 * sizeof(cl_float3), c.get());
+      cl::mem_t a_mem = ctx.create_buffer(CL_MEM_READ_ONLY,  block1 * sizeof(cl_float3), NULL);
+      cl::mem_t b_mem = ctx.create_buffer(CL_MEM_READ_ONLY,  block1 * sizeof(cl_float3), NULL);
+      cl::mem_t c_mem = ctx.create_buffer(CL_MEM_READ_WRITE, block1 * sizeof(cl_float3), NULL);
 
       cl::kernel_t kern = prog.kernel("chop");
 
