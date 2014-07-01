@@ -11,6 +11,7 @@
 class dist_t {
 public:
   virtual double dist(v3d_t) const =0;
+  virtual v3d_t grad(v3d_t) const =0;
 };
 
 inline double smin_exp(double a, double b, const double smooth) {
@@ -29,6 +30,26 @@ public:
       v3d_t::sub(v, v3d_t::init(0,.9,0)).length() - 1.0,
       30.0
     );
+  }
+  virtual v3d_t grad(v3d_t v) const {
+    const double DEL = 1.0/2048.0;
+    const v3d_t basis0 = v3d_t::init(DEL, 0.0, 0.0);
+    const v3d_t basis1 = v3d_t::init(0.0, DEL, 0.0);
+    const v3d_t basis2 = v3d_t::init(0.0, 0.0, DEL);
+    double gx1 = dist(v - basis0 * distL);
+    double gx2 = dist(v + basis0 * distL);
+    double gy1 = dist(p - basis1 * distL);
+    double gy2 = dist(p + basis1 * distL);
+    double gz1 = dist(p - basis2 * distL);
+    double gz2 = dist(p + basis2 * distL);
+
+    double  gradX,gradY, gradZ;
+
+    gradX = gx2 - gx1;
+    gradY = gy2 - gy1;
+    gradZ = gz2 - gz1;
+
+    return v3d_t::init(gradX, gradY, gradZ).normalize();
   }
 };
 dist_t *df = new scene_t;
