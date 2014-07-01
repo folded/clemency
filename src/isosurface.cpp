@@ -38,10 +38,10 @@ public:
     const v3d_t basis2 = v3d_t::init(0.0, 0.0, DEL);
     double gx1 = dist(v - basis0);
     double gx2 = dist(v + basis0);
-    double gy1 = dist(p - basis1);
-    double gy2 = dist(p + basis1);
-    double gz1 = dist(p - basis2);
-    double gz2 = dist(p + basis2);
+    double gy1 = dist(v - basis1);
+    double gy2 = dist(v + basis1);
+    double gz1 = dist(v - basis2);
+    double gz2 = dist(v + basis2);
 
     double  gradX,gradY, gradZ;
 
