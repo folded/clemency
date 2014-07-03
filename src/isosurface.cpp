@@ -73,8 +73,9 @@ public:
   typedef octree_t<isosurface_octree_t, double> super;
   dual_info_t *dual_info;
   funcdata_t data[8];
+  int depth;
 
-  isosurface_octree_t(const aabb3d_t &_bbox) : super(_bbox), dual_info(NULL) {
+  isosurface_octree_t(const aabb3d_t &_bbox) : super(_bbox), dual_info(NULL), depth(0) {
   }
 
   ~isosurface_octree_t() {
@@ -99,6 +100,8 @@ struct isosurface_splitter_t : public isosurface_octree_t::visitor_t {
   }
 
   void pre(isosurface_octree_t *node, int depth) {
+    node->depth = depth;
+
     if (depth > DEPTH) return;
     for (size_t i = 0; i < 8; ++i) {
       node->data[i].val = df.dist(node->corner(i));
@@ -173,12 +176,10 @@ struct cell_t {
       if (a.cell == NULL) return false;
       if (b.cell == NULL) return true;
 
-      double d = a.cell->bbox.extent.lengthsq() - b.cell->bbox.extent.lengthsq();
-      if (d > 0.0) return false;
-      if (d < 0.0) return true;
+      if (a.cell->depth > b.cell->depth) return true;
+      if (a.cell->depth < b.cell->depth) return false;
 
-      return std::lexicographical_compare(a.cell->bbox.mid.v, a.cell->bbox.mid.v + 3,
-                                          b.cell->bbox.mid.v, b.cell->bbox.mid.v + 3);
+      return a.cell->bbox.mid < b.cell->bbox.mid;
     }
   };
 
