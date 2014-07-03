@@ -5,7 +5,7 @@
 #include <vector>
 #include <tr1/unordered_map>
 
-#define OFFSET .001
+#define OFFSET 0.0
 #define DEPTH 7
 
 class dist_t {
@@ -36,6 +36,7 @@ public:
     const v3d_t basis0 = v3d_t::init(DEL, 0.0, 0.0);
     const v3d_t basis1 = v3d_t::init(0.0, DEL, 0.0);
     const v3d_t basis2 = v3d_t::init(0.0, 0.0, DEL);
+
     double gx1 = dist(v - basis0);
     double gx2 = dist(v + basis0);
     double gy1 = dist(v - basis1);
@@ -189,12 +190,12 @@ struct cell_t {
 
   template<typename iter_t>
   static cell_t min(iter_t a,
-             iter_t b) {
+                    iter_t b) {
     return *std::min_element(a, b, lt());
   }
 
   static cell_t min(const cell_t &a,
-             const cell_t &b) {
+                    const cell_t &b) {
     return lt()(a, b) ? a : b;
   }
 
@@ -251,13 +252,9 @@ struct cell_t {
                 cell_t(c, cell_t::EDGE, axis * 4 + 1),
                 cell_t(d, cell_t::EDGE, axis * 4 + 0));
 
-    int a1, a2;
-
-    switch (axis) {
-    case 0: a1 = 1; a2 = 2; break;
-    case 1: a1 = 2; a2 = 0; break;
-    case 2: a1 = 0; a2 = 1; break;
-    }
+    const int
+      a1 = (axis + 1) % 3,
+      a2 = (axis + 2) % 3;
 
     cell2ab = min(cell_t(a, cell_t::FACE, a1*2 + 1),
                   cell_t(b, cell_t::FACE, a1*2));
