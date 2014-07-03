@@ -106,7 +106,7 @@ struct isosurface_splitter_t : public isosurface_octree_t::visitor_t {
     if (depth > DEPTH) return;
 
     double d = df.dist(node->bbox.mid) - OFFSET;
-    if (d > 0.0 && d * d > node->bbox.extent.lengthsq()) return;
+    if (std::abs(d) > node->bbox.extent.length()) return;
 
     for (size_t i = 0; i < 8; ++i) {
       node->data[i].val = df.dist(node->corner(i));
