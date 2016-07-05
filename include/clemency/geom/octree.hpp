@@ -21,8 +21,8 @@
 
 
 
-#include "v3.hpp"
-#include "aabb3.hpp"
+#include <clemency/geom/v3.hpp>
+#include <clemency/geom/aabb3.hpp>
 
 
 

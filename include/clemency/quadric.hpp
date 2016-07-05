@@ -57,6 +57,11 @@ struct quadric_t {
     return coef[9];
   }
 
+  bool minimize(const aabb3d_t &bbox, v3d_t &v) const {
+    // TODO: implement
+    return false;
+  }
+
   bool minimize(v3d_t &v) const {
     m3d_t Ainv;
     double det;
@@ -106,4 +111,3 @@ static inline quadric_t operator+(const quadric_t &a, const quadric_t &b) {
   for (size_t i = 0; i < 10; ++i) r.coef[i] = a.coef[i] + b.coef[i];
   return r;
 }
-

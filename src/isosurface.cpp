@@ -3,7 +3,7 @@
 #include <deque>
 #include <list>
 #include <vector>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 #define OFFSET 0.0
 #define DEPTH 7
@@ -340,10 +340,10 @@ struct result_t {
     }
   };
 
-  typedef std::tr1::unordered_map<cell_type, position_t, typename cell_type::hash, typename cell_type::eq> tvert_info_map_t;
+  typedef std::unordered_map<cell_type, position_t, typename cell_type::hash, typename cell_type::eq> tvert_info_map_t;
   tvert_info_map_t tvert_info;
 
-  typedef std::tr1::unordered_map<std::pair<cell_type, cell_type>, size_t, typename cell_type::hash, typename cell_type::eq> int_idx_map_t;
+  typedef std::unordered_map<std::pair<cell_type, cell_type>, size_t, typename cell_type::hash, typename cell_type::eq> int_idx_map_t;
   int_idx_map_t int_idx;
   std::vector<v3d_t> int_pos;
 
@@ -651,6 +651,23 @@ struct leaf_count_t {
 
 
 int main(int argc, char **argv) {
+  // TODO:
+  // use quadric error to control splitting level.
+  //   Should the error just be the error at the minimum, or at the minimum subject to the constraints of the octree node?
+  // position points in m-cells better to reduce triangle count.
+  //   this is a matter of picking a cell of lower degree with opposite sign, and recursively subdividing to find a point on the surface.
+  //   suggests that we need to assign locations to all cells of lower degree before the current degree.
+  //     but would like to avoid doing this, because it would be good to be able to handle in parallel.
+  //   a point on a vertex (0-cell) is completely fixed.
+  //   a point on an edge (1-cell) is fixed to lie between its adjacent 0-cell points
+  //     because we are only interested in minimal 1-cells, only 2 0-cells will ever be important.
+  //   a point on a face (2-cell) is constrained by its adjacent 1-cells.
+  //     this is more complex because a minimal 2-cell might be adjacent to smaller 2-cells, and thus more than 4 1-cells may border it.
+  //   a point in a box (3-cell) is constrained by its adjacent 2-cells
+  //     as with 2-cells, there may be more than 6 adjacent 2-cells
+  //   repositioning points on the surface (for the 2-cell and 3-cell case) can affect topology in some cases. ignore until an example is seen?
+
+
   isosurface_octree_t pt(aabb3d_t::initWithPoints(v3d_t::init(-2.0, -2.0, -2.0), v3d_t::init(+2.0, +2.0, +2.0)));
 
   isosurface_splitter_t splitter(*df);

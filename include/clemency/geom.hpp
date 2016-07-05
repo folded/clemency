@@ -21,25 +21,25 @@
 
 
 
-#include "geom/v2.hpp"
-#include "geom/v3.hpp"
+#include <clemency/geom/v2.hpp>
+#include <clemency/geom/v3.hpp>
 
-#include "geom/quat.hpp"
+#include <clemency/geom/quat.hpp>
 
-#include "geom/m3.hpp"
-#include "geom/m4.hpp"
+#include <clemency/geom/m3.hpp>
+#include <clemency/geom/m4.hpp>
 
-#include "geom/tri2.hpp"
-#include "geom/tri3.hpp"
+#include <clemency/geom/tri2.hpp>
+#include <clemency/geom/tri3.hpp>
 
-#include "geom/circle.hpp"
-#include "geom/sphere.hpp"
+#include <clemency/geom/circle.hpp>
+#include <clemency/geom/sphere.hpp>
 
-#include "geom/aabb2.hpp"
-#include "geom/aabb3.hpp"
+#include <clemency/geom/aabb2.hpp>
+#include <clemency/geom/aabb3.hpp>
 
-#include "geom/solve.hpp"
+#include <clemency/geom/solve.hpp>
 
-#include "geom/qbezier2.hpp"
+#include <clemency/geom/qbezier2.hpp>
 
-#include "geom/octree.hpp"
+#include <clemency/geom/octree.hpp>

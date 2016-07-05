@@ -19,15 +19,9 @@
 
 #pragma once
 
-
-
-#include <boost/random.hpp>
-
-
-
-#include "v2.hpp"
-
-
+#include <clemency/geom/v2.hpp>
+#include <boost/random/uniform_on_sphere.hpp>
+#include <boost/random/variate_generator.hpp>
 
 template<typename num_t>
 class circle_t {

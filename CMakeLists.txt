@@ -15,6 +15,8 @@ set(CLEMENCY_VERSION ${clemency_VERSION_MAJOR}.${clemency_VERSION_MINOR}.${cleme
 
 option(BUILD_COVERAGE                    "Compile with gcov"                                 OFF)
 
+enable_language(CXX)
+
 if (BUILD_COVERAGE)
   set(BUILD_SHARED_LIBS OFF)
   set(CMAKE_BUILD_TYPE DEBUG)
@@ -25,8 +27,8 @@ if (BUILD_COVERAGE)
   ENDIF()
 endif(BUILD_COVERAGE)
 
-set(Boost_USE_STATIC_LIBS        ON)
-find_package(Boost 1.40 COMPONENTS program_options)
+set(Boost_USE_STATIC_LIBS OFF)
+find_package(Boost 1.40 REQUIRED COMPONENTS program_options)
 
 if (Boost_FOUND)
   if (!Boost_PROGRAM_OPTIONS_FOUND)
@@ -38,8 +40,8 @@ else (Boost_FOUND)
   message(ERROR "Boost not found")
 endif (Boost_FOUND)
 
+find_package(OpenCL REQUIRED)
 find_package(OpenMP)
-find_package(OpenCL)
 
 if(OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

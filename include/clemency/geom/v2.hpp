@@ -24,7 +24,7 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
-#include <tr1/functional>
+#include <functional>
 
 
 
@@ -254,7 +254,7 @@ std::ostream &operator<<(std::ostream &out, const v2_t<num_t> &v) {
 struct v2_hash_t {
   template<typename num_t>
   size_t operator()(const v2_t<num_t> &a) const {
-    std::tr1::hash<num_t> h;
+    std::hash<num_t> h;
     size_t r = 0;
     r *= 131; r ^= h(a.x);
     r *= 131; r ^= h(a.y);
@@ -263,7 +263,7 @@ struct v2_hash_t {
 
   template<typename num_t>
   size_t operator()(const std::pair<v2_t<num_t>, v2_t<num_t> > &a) const {
-    std::tr1::hash<num_t> h;
+    std::hash<num_t> h;
     size_t r = 0;
     r *= 131; r ^= h(a.first.x);
     r *= 131; r ^= h(a.first.y);

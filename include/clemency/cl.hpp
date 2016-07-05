@@ -426,38 +426,38 @@ namespace cl {
 
 
   struct dev_t {
-    typedef info_t<cl_device_id> info_t;
+    typedef info_t<cl_device_id> info_type;
 
     cl_device_id id;
 
     dev_t(cl_device_id _id) : id(_id) {
     }
 
-    cl_device_type               type() const { return info_t::get<cl_device_type>(id, CL_DEVICE_TYPE);                   }
-    cl_uint                 vendor_id() const { return info_t::get<cl_uint>(id, CL_DEVICE_VENDOR_ID);                     }
-    cl_uint         max_compute_units() const { return info_t::get<cl_uint>(id, CL_DEVICE_MAX_COMPUTE_UNITS);             }
-    cl_uint          max_workitem_dim() const { return info_t::get<cl_uint>(id, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);      }
-    size_t         max_workgroup_size() const { return info_t::get<size_t>(id, CL_DEVICE_MAX_WORK_GROUP_SIZE);            }
-    cl_uint         max_clockfreq_mhz() const { return info_t::get<cl_uint>(id, CL_DEVICE_MAX_CLOCK_FREQUENCY);           }
+    cl_device_type               type() const { return info_type::get<cl_device_type>(id, CL_DEVICE_TYPE);                   }
+    cl_uint                 vendor_id() const { return info_type::get<cl_uint>(id, CL_DEVICE_VENDOR_ID);                     }
+    cl_uint         max_compute_units() const { return info_type::get<cl_uint>(id, CL_DEVICE_MAX_COMPUTE_UNITS);             }
+    cl_uint          max_workitem_dim() const { return info_type::get<cl_uint>(id, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);      }
+    size_t         max_workgroup_size() const { return info_type::get<size_t>(id, CL_DEVICE_MAX_WORK_GROUP_SIZE);            }
+    cl_uint         max_clockfreq_mhz() const { return info_type::get<cl_uint>(id, CL_DEVICE_MAX_CLOCK_FREQUENCY);           }
 
-    cl_uint           global_mem_size() const { return info_t::get<cl_uint>(id, CL_DEVICE_GLOBAL_MEM_SIZE);               }
-    cl_uint            local_mem_size() const { return info_t::get<cl_uint>(id, CL_DEVICE_LOCAL_MEM_SIZE);                }
-    cl_uint                 max_alloc() const { return info_t::get<cl_uint>(id, CL_DEVICE_MAX_MEM_ALLOC_SIZE);            }
+    cl_uint           global_mem_size() const { return info_type::get<cl_uint>(id, CL_DEVICE_GLOBAL_MEM_SIZE);               }
+    cl_uint            local_mem_size() const { return info_type::get<cl_uint>(id, CL_DEVICE_LOCAL_MEM_SIZE);                }
+    cl_uint                 max_alloc() const { return info_type::get<cl_uint>(id, CL_DEVICE_MAX_MEM_ALLOC_SIZE);            }
 
-    cl_bool         has_image_support() const { return info_t::get<cl_bool>(id, CL_DEVICE_IMAGE_SUPPORT);                 }
-    cl_bool          device_available() const { return info_t::get<cl_bool>(id, CL_DEVICE_AVAILABLE);                     }
-    cl_bool        compiler_available() const { return info_t::get<cl_bool>(id, CL_DEVICE_COMPILER_AVAILABLE);            }
+    cl_bool         has_image_support() const { return info_type::get<cl_bool>(id, CL_DEVICE_IMAGE_SUPPORT);                 }
+    cl_bool          device_available() const { return info_type::get<cl_bool>(id, CL_DEVICE_AVAILABLE);                     }
+    cl_bool        compiler_available() const { return info_type::get<cl_bool>(id, CL_DEVICE_COMPILER_AVAILABLE);            }
 
-    size_t         max_parameter_size() const { return info_t::get<size_t>(id, CL_DEVICE_MAX_PARAMETER_SIZE);             }
-    cl_uint         max_constant_args() const { return info_t::get<cl_uint>(id, CL_DEVICE_MAX_CONSTANT_ARGS);             }
+    size_t         max_parameter_size() const { return info_type::get<size_t>(id, CL_DEVICE_MAX_PARAMETER_SIZE);             }
+    cl_uint         max_constant_args() const { return info_type::get<cl_uint>(id, CL_DEVICE_MAX_CONSTANT_ARGS);             }
 
-    std::string                  name() const { return info_t::getstr(id, CL_DEVICE_NAME);                                }
-    std::string                vendor() const { return info_t::getstr(id, CL_DEVICE_VENDOR);                              }
-    std::string               version() const { return info_t::getstr(id, CL_DEVICE_VERSION);                             }
-    std::string             c_version() const { return info_t::getstr(id, CL_DEVICE_OPENCL_C_VERSION);                    }
-    std::string        driver_version() const { return info_t::getstr(id, CL_DRIVER_VERSION);                             }
-    std::string               profile() const { return info_t::getstr(id, CL_DEVICE_PROFILE);                             }
-    std::string            extensions() const { return info_t::getstr(id, CL_DEVICE_EXTENSIONS);                          }
+    std::string                  name() const { return info_type::getstr(id, CL_DEVICE_NAME);                                }
+    std::string                vendor() const { return info_type::getstr(id, CL_DEVICE_VENDOR);                              }
+    std::string               version() const { return info_type::getstr(id, CL_DEVICE_VERSION);                             }
+    std::string             c_version() const { return info_type::getstr(id, CL_DEVICE_OPENCL_C_VERSION);                    }
+    std::string        driver_version() const { return info_type::getstr(id, CL_DRIVER_VERSION);                             }
+    std::string               profile() const { return info_type::getstr(id, CL_DEVICE_PROFILE);                             }
+    std::string            extensions() const { return info_type::getstr(id, CL_DEVICE_EXTENSIONS);                          }
 
     bool is_cpu() const { return type() & CL_DEVICE_TYPE_CPU; }
     bool is_gpu() const { return type() & CL_DEVICE_TYPE_GPU; }
@@ -465,7 +465,7 @@ namespace cl {
     std::vector<cl_uint> max_workitem_sizes() const {
       std::vector<cl_uint> sizes;
       sizes.resize(max_workitem_dim());
-      info_t::getvec<cl_uint>(id, CL_DEVICE_MAX_WORK_ITEM_SIZES, &sizes[0], sizes.size());
+      info_type::getvec<cl_uint>(id, CL_DEVICE_MAX_WORK_ITEM_SIZES, &sizes[0], sizes.size());
       return sizes;
     }
 
@@ -475,7 +475,7 @@ namespace cl {
 
 
   struct platform_t {
-    typedef info_t<cl_platform_id> info_t;
+    typedef info_t<cl_platform_id> info_type;
 
     cl_platform_id id;
     std::vector<dev_t *> cl_devices;
@@ -497,11 +497,11 @@ namespace cl {
       }
     }
 
-    std::string    profile() const { return info_t::getstr(id, CL_PLATFORM_PROFILE);    }
-    std::string    version() const { return info_t::getstr(id, CL_PLATFORM_VERSION);    }
-    std::string       name() const { return info_t::getstr(id, CL_PLATFORM_NAME);       }
-    std::string     vendor() const { return info_t::getstr(id, CL_PLATFORM_VENDOR);     }
-    std::string extensions() const { return info_t::getstr(id, CL_PLATFORM_EXTENSIONS); }
+    std::string    profile() const { return info_type::getstr(id, CL_PLATFORM_PROFILE);    }
+    std::string    version() const { return info_type::getstr(id, CL_PLATFORM_VERSION);    }
+    std::string       name() const { return info_type::getstr(id, CL_PLATFORM_NAME);       }
+    std::string     vendor() const { return info_type::getstr(id, CL_PLATFORM_VENDOR);     }
+    std::string extensions() const { return info_type::getstr(id, CL_PLATFORM_EXTENSIONS); }
 
     operator cl_platform_id() const { return id; }
   };
@@ -509,7 +509,7 @@ namespace cl {
 
 
   struct event_t {
-    typedef info_t<cl_event> info_t;
+    typedef info_t<cl_event> info_type;
 
     cl_event id;
 
@@ -545,11 +545,11 @@ namespace cl {
       }
     }
 
-    cl_uint         refcount() const { return info_t::get<cl_uint>(id, CL_EVENT_REFERENCE_COUNT);         }
-    cl_context       context() const { return info_t::get<cl_context>(id, CL_EVENT_CONTEXT);              }
-    cl_command_queue   queue() const { return info_t::get<cl_command_queue>(id, CL_EVENT_COMMAND_QUEUE);  }
-    cl_command_type     type() const { return info_t::get<cl_command_type>(id, CL_EVENT_COMMAND_TYPE);    }
-    cl_int            status() const { return info_t::get<cl_int>(id, CL_EVENT_COMMAND_EXECUTION_STATUS); }
+    cl_uint         refcount() const { return info_type::get<cl_uint>(id, CL_EVENT_REFERENCE_COUNT);         }
+    cl_context       context() const { return info_type::get<cl_context>(id, CL_EVENT_CONTEXT);              }
+    cl_command_queue   queue() const { return info_type::get<cl_command_queue>(id, CL_EVENT_COMMAND_QUEUE);  }
+    cl_command_type     type() const { return info_type::get<cl_command_type>(id, CL_EVENT_COMMAND_TYPE);    }
+    cl_int            status() const { return info_type::get<cl_int>(id, CL_EVENT_COMMAND_EXECUTION_STATUS); }
 
     void set_status(cl_int status) const {
       _check(clSetUserEventStatus(id, status));
@@ -569,7 +569,7 @@ namespace cl {
 
 
   struct mem_t {
-    typedef info_t<cl_mem> info_t;
+    typedef info_t<cl_mem> info_type;
 
     cl_mem id;
 
@@ -597,14 +597,14 @@ namespace cl {
       if (id) clReleaseMemObject(id);
     }
 
-    cl_uint         refcount() const { return info_t::get<cl_uint>(id, CL_MEM_REFERENCE_COUNT);     }
-    cl_mem_object_type  type() const { return info_t::get<cl_mem_object_type>(id, CL_MEM_TYPE);     }
-    cl_mem_flags       flags() const { return info_t::get<cl_mem_flags>(id, CL_MEM_FLAGS);          }
-    size_t              size() const { return info_t::get<size_t>(id, CL_MEM_SIZE);                 }
-    void *          host_ptr() const { return info_t::get<void *>(id, CL_MEM_HOST_PTR);             }
-    cl_uint         mapcount() const { return info_t::get<cl_uint>(id, CL_MEM_MAP_COUNT);           }
-    cl_mem            parent() const { return info_t::get<cl_mem>(id, CL_MEM_ASSOCIATED_MEMOBJECT); }
-    size_t            offset() const { return info_t::get<size_t>(id, CL_MEM_OFFSET);               }
+    cl_uint         refcount() const { return info_type::get<cl_uint>(id, CL_MEM_REFERENCE_COUNT);     }
+    cl_mem_object_type  type() const { return info_type::get<cl_mem_object_type>(id, CL_MEM_TYPE);     }
+    cl_mem_flags       flags() const { return info_type::get<cl_mem_flags>(id, CL_MEM_FLAGS);          }
+    size_t              size() const { return info_type::get<size_t>(id, CL_MEM_SIZE);                 }
+    void *          host_ptr() const { return info_type::get<void *>(id, CL_MEM_HOST_PTR);             }
+    cl_uint         mapcount() const { return info_type::get<cl_uint>(id, CL_MEM_MAP_COUNT);           }
+    cl_mem            parent() const { return info_type::get<cl_mem>(id, CL_MEM_ASSOCIATED_MEMOBJECT); }
+    size_t            offset() const { return info_type::get<size_t>(id, CL_MEM_OFFSET);               }
 
     operator cl_mem() const { return id; }
   };
@@ -612,7 +612,7 @@ namespace cl {
 
 
   struct kernel_t {
-    typedef info_t<cl_kernel> info_t;
+    typedef info_t<cl_kernel> info_type;
 
     cl_kernel id;
 
@@ -640,11 +640,11 @@ namespace cl {
       if (id) clReleaseKernel(id);
     }
 
-    cl_uint         refcount() const { return info_t::get<cl_uint>(id, CL_KERNEL_REFERENCE_COUNT); }
-    std::string         name() const { return info_t::getstr(id, CL_KERNEL_FUNCTION_NAME);         }
-    cl_uint         num_args() const { return info_t::get<cl_uint>(id, CL_KERNEL_NUM_ARGS);        }
-    cl_context       context() const { return info_t::get<cl_context>(id, CL_KERNEL_CONTEXT);      }
-    cl_program       program() const { return info_t::get<cl_program>(id, CL_KERNEL_PROGRAM);      }
+    cl_uint         refcount() const { return info_type::get<cl_uint>(id, CL_KERNEL_REFERENCE_COUNT); }
+    std::string         name() const { return info_type::getstr(id, CL_KERNEL_FUNCTION_NAME);         }
+    cl_uint         num_args() const { return info_type::get<cl_uint>(id, CL_KERNEL_NUM_ARGS);        }
+    cl_context       context() const { return info_type::get<cl_context>(id, CL_KERNEL_CONTEXT);      }
+    cl_program       program() const { return info_type::get<cl_program>(id, CL_KERNEL_PROGRAM);      }
 
     template<typename T>
     void arg(int arg_num, T val) const {
@@ -657,8 +657,8 @@ namespace cl {
 
 
   struct program_t {
-    typedef info_t<std::pair<cl_program, cl_device_id> > build_info_t;
-    typedef info_t<cl_program> info_t;
+    typedef info_t<std::pair<cl_program, cl_device_id> > build_info_type;
+    typedef info_t<cl_program> info_type;
 
     cl_program id;
 
@@ -686,27 +686,27 @@ namespace cl {
       if (id) clReleaseProgram(id);
     }
 
-    cl_uint         refcount() const { return info_t::get<cl_uint>(id, CL_CONTEXT_REFERENCE_COUNT); }
-    cl_context       context() const { return info_t::get<cl_context>(id, CL_PROGRAM_CONTEXT);      }
-    std::string       source() const { return info_t::getstr(id, CL_PROGRAM_SOURCE);                }
-    cl_uint      num_devices() const { return info_t::get<cl_uint>(id, CL_CONTEXT_NUM_DEVICES);     }
+    cl_uint         refcount() const { return info_type::get<cl_uint>(id, CL_CONTEXT_REFERENCE_COUNT); }
+    cl_context       context() const { return info_type::get<cl_context>(id, CL_PROGRAM_CONTEXT);      }
+    std::string       source() const { return info_type::getstr(id, CL_PROGRAM_SOURCE);                }
+    cl_uint      num_devices() const { return info_type::get<cl_uint>(id, CL_CONTEXT_NUM_DEVICES);     }
 
     cl_build_status build_status(cl_device_id dev) const {
-      return build_info_t::get<cl_build_status>(std::make_pair(id, dev), CL_PROGRAM_BUILD_STATUS);
+      return build_info_type::get<cl_build_status>(std::make_pair(id, dev), CL_PROGRAM_BUILD_STATUS);
     }
 
     std::string build_options(cl_device_id dev) const {
-      return build_info_t::getstr(std::make_pair(id, dev), CL_PROGRAM_BUILD_OPTIONS);
+      return build_info_type::getstr(std::make_pair(id, dev), CL_PROGRAM_BUILD_OPTIONS);
     }
 
     std::string build_log(cl_device_id dev) const {
-      return build_info_t::getstr(std::make_pair(id, dev), CL_PROGRAM_BUILD_LOG);
+      return build_info_type::getstr(std::make_pair(id, dev), CL_PROGRAM_BUILD_LOG);
     }
 
     std::vector<cl_device_id> devices() const {
       std::vector<cl_device_id> dev;
       dev.resize(num_devices());
-      info_t::getvec<cl_device_id>(id, CL_CONTEXT_DEVICES, &dev[0], dev.size());
+      info_type::getvec<cl_device_id>(id, CL_CONTEXT_DEVICES, &dev[0], dev.size());
       return dev;
     }
 
@@ -744,7 +744,7 @@ namespace cl {
 
 
   struct ctx_t {
-    typedef info_t<cl_context> info_t;
+    typedef info_t<cl_context> info_type;
 
     cl_context id;
 
@@ -807,13 +807,13 @@ namespace cl {
       if (id) clReleaseContext(id);
     }
 
-    cl_uint    refcount() const { return info_t::get<cl_uint>(id, CL_CONTEXT_REFERENCE_COUNT); }
-    cl_uint num_devices() const { return info_t::get<cl_uint>(id, CL_CONTEXT_NUM_DEVICES);     }
+    cl_uint    refcount() const { return info_type::get<cl_uint>(id, CL_CONTEXT_REFERENCE_COUNT); }
+    cl_uint num_devices() const { return info_type::get<cl_uint>(id, CL_CONTEXT_NUM_DEVICES);     }
 
     std::vector<cl_device_id> devices() const {
       std::vector<cl_device_id> dev;
       dev.resize(num_devices());
-      info_t::getvec<cl_device_id>(id, CL_CONTEXT_DEVICES, &dev[0], dev.size());
+      info_type::getvec<cl_device_id>(id, CL_CONTEXT_DEVICES, &dev[0], dev.size());
       return dev;
     }
 
@@ -861,7 +861,7 @@ namespace cl {
 
 
   struct queue_t {
-    typedef info_t<cl_command_queue> info_t;
+    typedef info_t<cl_command_queue> info_type;
 
     cl_command_queue id;
 
@@ -895,12 +895,12 @@ namespace cl {
       if (id) clReleaseCommandQueue(id);
     }
 
-    cl_uint         refcount() const { return info_t::get<cl_uint>(id, CL_QUEUE_REFERENCE_COUNT); }
-    cl_context       context() const { return info_t::get<cl_context>(id, CL_QUEUE_CONTEXT);      }
-    cl_device_id      device() const { return info_t::get<cl_device_id>(id, CL_QUEUE_DEVICE);     }
+    cl_uint         refcount() const { return info_type::get<cl_uint>(id, CL_QUEUE_REFERENCE_COUNT); }
+    cl_context       context() const { return info_type::get<cl_context>(id, CL_QUEUE_CONTEXT);      }
+    cl_device_id      device() const { return info_type::get<cl_device_id>(id, CL_QUEUE_DEVICE);     }
 
     cl_command_queue_properties properties() const {
-      return info_t::get<cl_command_queue_properties>(id, CL_QUEUE_PROPERTIES);
+      return info_type::get<cl_command_queue_properties>(id, CL_QUEUE_PROPERTIES);
     }
 
     template<typename cmd_t>

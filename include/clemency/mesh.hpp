@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
+#include <unordered_set>
+#include <unordered_map>
 
 #include <set>
 
@@ -153,7 +153,7 @@ public:
 
 struct vert_hash_t {
   size_t operator()(const vert_t &a) const {
-    std::tr1::hash<double> h;
+    std::hash<double> h;
     size_t r = 0;
     r *= 131; r ^= h(a.pos.x);
     r *= 131; r ^= h(a.pos.y);
@@ -658,13 +658,13 @@ struct triangle_mesh_t {
   triangle_mesh_t *submesh(iter_t begin, iter_t end) const {
     triangle_mesh_t *result = new triangle_mesh_t;
 
-    std::tr1::unordered_map<size_t, size_t> vertex_map;
+    std::unordered_map<size_t, size_t> vertex_map;
     std::vector<size_t> vertex_idx;
 
     for (iter_t i = begin; i != end; ++i) {
       tri_t *t = tri_ptr(i);
       for (size_t j = 0; j < 3; ++j) {
-        std::tr1::unordered_map<size_t, size_t>::iterator iter = vertex_map.find(t->v[j]);
+        std::unordered_map<size_t, size_t>::iterator iter = vertex_map.find(t->v[j]);
         if (iter == vertex_map.end()) {
           vertex_map[t->v[j]] = vertex_idx.size();
           vertex_idx.push_back(t->v[j]);
@@ -691,7 +691,7 @@ struct triangle_mesh_t {
 
 template<typename mesh_t, typename vert_hash_t, typename vert_eq_t>
 mesh_t *merge_meshes(mesh_t *a, mesh_t *b) {
-  typedef std::tr1::unordered_map<typename mesh_t::vert_t, size_t, vert_hash_t, vert_eq_t> vert_map_t;
+  typedef std::unordered_map<typename mesh_t::vert_t, size_t, vert_hash_t, vert_eq_t> vert_map_t;
   vert_map_t vert_map;
 
   std::vector<size_t> a_remap, b_remap;
@@ -746,7 +746,7 @@ mesh_t *merge_meshes(mesh_t *a, mesh_t *b) {
 
 template<typename _vert_t, typename _tri_t>
 bool triangle_mesh_t<_vert_t, _tri_t>::is_closed_manifold() const {
-    typedef std::tr1::unordered_map<std::pair<size_t, size_t>, std::vector<size_t>, hash_size_t_pair> edge_map_t;
+    typedef std::unordered_map<std::pair<size_t, size_t>, std::vector<size_t>, hash_size_t_pair> edge_map_t;
 
     std::vector<tri_t *> faces;
     faces.reserve(face_count);

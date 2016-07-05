@@ -32,12 +32,12 @@
 #include <list>
 #include <limits>
 #include <vector>
-#include <ext/algorithm>
+#include <algorithm>
 #include <set>
 #include <map>
 
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
+#include <unordered_set>
+#include <unordered_map>
 
 #include <boost/heap/binomial_heap.hpp>
 #include <boost/heap/fibonacci_heap.hpp>
@@ -46,6 +46,51 @@
 
 #include <boost/program_options.hpp>
 #include <boost/scoped_array.hpp>
+
+const std::string _kernels("\
+\n\
+__kernel void grid(\n\
+    __global const float *gx,\n\
+    __global const float *gy,\n\
+    __global const float *gz,\n\
+    __global uchar *out,\n\
+    size_t y_pitch,\n\
+    size_t z_pitch) {\n\
+  size_t ix = get_global_id(0);\n\
+  size_t iy = get_global_id(1);\n\
+  size_t iz = get_global_id(2);\n\
+\n\
+  size_t sx = get_global_size(0);\n\
+  size_t sy = get_global_size(1);\n\
+\n\
+  float3 pos = (float3)(gx[ix], gy[iy], gz[iz]);\n\
+\n\
+  out[ix + iy * y_pitch + iz * z_pitch] = inside(pos) ? 1 : 0;\n\
+}\n\
+\n\
+__kernel void chop(\n\
+    __global const float3 *av,\n\
+    __global const float3 *bv,\n\
+    __global float3 *cv,\n\
+  const size_t n_steps) {\n\
+  size_t i = get_global_id(0);\n\
+\n\
+  float3 a = av[i];\n\
+  float3 b = bv[i];\n\
+  float3 c;\n\
+\n\
+  bool ai = inside(a);\n\
+  bool bi = inside(b);\n\
+\n\
+  for (size_t iter = 0; iter < n_steps; ++iter) {\n\
+      c = (a+b)/2.0f;\n\
+      bool ci = inside(c);\n\
+      if (ci == ai) { a = c; } else { b = c; }\n\
+  }\n\
+\n\
+  cv[i] = (a+b)/2.0f;\n\
+}\n\
+");
 
 namespace opt = boost::program_options;
 
@@ -92,7 +137,7 @@ struct marching_cubes_t {
   std::vector<double> py;
   std::vector<double> pz;
 
-  typedef std::tr1::unordered_map<edgeint_t, size_t, edgeint_hash_t> edgeint_map_t;
+  typedef std::unordered_map<edgeint_t, size_t, edgeint_hash_t> edgeint_map_t;
   edgeint_map_t int_idx;
 
   mesh_t *mesh;
@@ -429,6 +474,7 @@ int main(int argc, char **argv) {
       inf.read(buf, 1024);
       src.append(buf, inf.gcount());
     }
+    src += _kernels;
 
     cl::program_t prog = ctx.create_program_from_source(src);
 

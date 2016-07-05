@@ -30,12 +30,12 @@
 #include <list>
 #include <limits>
 #include <vector>
-#include <ext/algorithm>
+#include <algorithm>
 #include <set>
 #include <map>
 
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
+#include <unordered_set>
+#include <unordered_map>
 
 #include <boost/heap/binomial_heap.hpp>
 #include <boost/heap/fibonacci_heap.hpp>

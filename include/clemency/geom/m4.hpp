@@ -21,8 +21,8 @@
 
 
 
-#include "v3.hpp"
-#include "quat.hpp"
+#include <clemency/geom/v3.hpp>
+#include <clemency/geom/quat.hpp>
 
 
 

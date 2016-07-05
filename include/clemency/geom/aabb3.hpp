@@ -21,9 +21,9 @@
 
 
 
-#include "v3.hpp"
-#include "tri3.hpp"
-#include "sphere.hpp"
+#include <clemency/geom/v3.hpp>
+#include <clemency/geom/tri3.hpp>
+#include <clemency/geom/sphere.hpp>
 
 
 

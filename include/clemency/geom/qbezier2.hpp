@@ -21,8 +21,8 @@
 
 
 
-#include "v2.hpp"
-#include "solve.hpp"
+#include <clemency/geom/v2.hpp>
+#include <clemency/geom/solve.hpp>
 
 
 

@@ -20,8 +20,7 @@
 #pragma once
 
 #include <vector>
-
-
+#include <unordered_map>
 
 class djset {
 
@@ -122,13 +121,13 @@ public:
 
   template<typename in_iter_t, typename out_collection_t>
   void collate(in_iter_t in, out_collection_t &out) {
-    std::tr1::unordered_map<size_t, size_t> set_id;
+    std::unordered_map<size_t, size_t> set_id;
     out.clear();
     out.resize(n_sets);
     size_t c = 0;
     for (size_t i = 0; i < set.size(); ++i) {
       size_t s = find_set_head(i);
-      std::tr1::unordered_map<size_t, size_t>::iterator id = set_id.find(s);
+      std::unordered_map<size_t, size_t>::iterator id = set_id.find(s);
       if (id == set_id.end()) {
         s = set_id[s] = c++;
       } else {
@@ -142,13 +141,13 @@ public:
 
   template<typename out_collection_t>
   void collate(out_collection_t &out) {
-    std::tr1::unordered_map<size_t, size_t> set_id;
+    std::unordered_map<size_t, size_t> set_id;
     out.clear();
     out.resize(n_sets);
     size_t c = 0;
     for (size_t i = 0; i < set.size(); ++i) {
       size_t s = find_set_head(i);
-      std::tr1::unordered_map<size_t, size_t>::iterator id = set_id.find(s);
+      std::unordered_map<size_t, size_t>::iterator id = set_id.find(s);
       if (id == set_id.end()) {
         s = set_id[s] = c++;
       } else {

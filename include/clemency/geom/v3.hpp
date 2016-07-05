@@ -19,22 +19,13 @@
 
 #pragma once
 
-
-
 #include <math.h>
 #include <iostream>
 #include <vector>
-#include <tr1/functional>
+#include <functional>
+#include <algorithm>
 
-
-
-#include <boost/random.hpp>
-
-
-
-#include "v2.hpp"
-
-
+#include <clemency/geom/v2.hpp>
 
 template<typename num_t>
 struct v3_t {
@@ -258,7 +249,7 @@ static inline std::ostream &operator<<(std::ostream &out, const v3_t<num_t> &v) 
 struct v3_hash_t {
   template<typename num_t>
   size_t operator()(const v3_t<num_t> &a) const {
-    std::tr1::hash<num_t> h;
+    std::hash<num_t> h;
     size_t r = 0;
     r *= 131; r ^= h(a.x);
     r *= 131; r ^= h(a.y);
@@ -268,7 +259,7 @@ struct v3_hash_t {
 
   template<typename num_t>
   size_t operator()(const std::pair<v3_t<num_t>, v3_t<num_t> > &a) const {
-    std::tr1::hash<num_t> h;
+    std::hash<num_t> h;
     size_t r = 0;
     r *= 131; r ^= h(a.first.x);
     r *= 131; r ^= h(a.first.y);

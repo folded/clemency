@@ -21,7 +21,9 @@
 
 
 
-#include "quat.hpp"
+#include <clemency/geom/quat.hpp>
+#include <cstdlib>
+#include <cmath>
 
 
 
