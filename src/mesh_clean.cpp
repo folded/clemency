@@ -50,22 +50,19 @@ typedef triangle_mesh_t<vert_t, tri_t> mesh_t;
 
 typedef rtree_node_t<mesh_t::tri_t> rtree_t;
 
-
-
 struct closest_point_info_t {
   double current_dist2;
   double orientation;
-  mesh_t::tri_t *closest_tri;
+  mesh_t::tri_t* closest_tri;
   v3d_t closest_point;
 
-  void _find(const rtree_t *rt,
-             const mesh_t::vlookup_t &vlookup,
-             const v3d_t &pt) {
-
-    std::vector<std::pair<double, rtree_t *> > sorted_children;
+  void _find(const rtree_t* rt,
+             const mesh_t::vlookup_t& vlookup,
+             const v3d_t& pt) {
+    std::vector<std::pair<double, rtree_t*> > sorted_children;
 
     for (size_t i = 0; i < rt->data.size(); ++i) {
-      mesh_t::tri_t *t = rt->data[i];
+      mesh_t::tri_t* t = rt->data[i];
       tri3d_t t_pt(vlookup(t->a), vlookup(t->b), vlookup(t->c));
       v3d_t c = t_pt.closest_point(pt);
 
@@ -79,21 +76,25 @@ struct closest_point_info_t {
       }
     }
 
-    for (rtree_t *ch = rt->child; ch != NULL; ch = ch->sibling) {
+    for (rtree_t* ch = rt->child; ch != NULL; ch = ch->sibling) {
       double bbox_dist2 = ch->bbox.distancesq(pt);
-      if (bbox_dist2 > current_dist2) continue;
+      if (bbox_dist2 > current_dist2)
+        continue;
       sorted_children.push_back(std::make_pair(bbox_dist2, ch));
     }
 
     std::sort(sorted_children.begin(), sorted_children.end());
 
     for (size_t i = 0; i < sorted_children.size(); ++i) {
-      if (sorted_children[i].first > current_dist2) break;
+      if (sorted_children[i].first > current_dist2)
+        break;
       _find(sorted_children[i].second, vlookup, pt);
     }
   }
 
-  void find(const rtree_t *rt, const mesh_t::vlookup_t &vlookup, const v3d_t &pt) {
+  void find(const rtree_t* rt,
+            const mesh_t::vlookup_t& vlookup,
+            const v3d_t& pt) {
     closest_tri = NULL;
     current_dist2 = std::numeric_limits<double>::max();
     orientation = 0.0;
@@ -101,10 +102,9 @@ struct closest_point_info_t {
   }
 };
 
-
-
-void process(mesh_t *mesh) {
-  rtree_t *rtree = rtree_t::construct_STR(mesh->fbegin(), mesh->fend(), mesh->aabb_getter(), 4, 4);
+void process(mesh_t* mesh) {
+  rtree_t* rtree = rtree_t::construct_STR(mesh->fbegin(), mesh->fend(),
+                                          mesh->aabb_getter(), 4, 4);
   std::cerr << "mesh bounds: " << rtree->bbox << std::endl;
 
   const double STEP = 0.05;
@@ -119,39 +119,35 @@ void process(mesh_t *mesh) {
         double d = sqrt(info.current_dist2);
         if (d > RAD) {
           info.closest_tri->tag = tag;
-          double n_steps = floor((d-RAD) / STEP);
-          if (n_steps > 1) z += STEP * (n_steps-1);
+          double n_steps = floor((d - RAD) / STEP);
+          if (n_steps > 1)
+            z += STEP * (n_steps - 1);
         }
       }
     }
   }
-  std::vector<mesh_t::tri_t *> tagged_faces;
+  std::vector<mesh_t::tri_t*> tagged_faces;
   for (mesh_t::face_iter iter = mesh->fbegin(); iter != mesh->fend(); ++iter) {
     if (iter->tag == tag) {
       tagged_faces.push_back(&*iter);
     }
   }
-  mesh_t *submesh = mesh->submesh(tagged_faces.begin(), tagged_faces.end());
+  mesh_t* submesh = mesh->submesh(tagged_faces.begin(), tagged_faces.end());
 
   gloop::ply::PlyWriter file(true, false);
   io::write_mesh(std::cout, file, submesh);
 }
 
-
-
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   std::string src_file;
 
   opt::options_description generic;
-  generic.add_options()
-    ("help,h",                                                       "Print help and exit")
-    ("version,v",                                                    "Print version string")
-    ;
+  generic.add_options()("help,h", "Print help and exit")(
+      "version,v", "Print version string");
 
   opt::options_description hidden;
-  hidden.add_options()
-    ("mesh", opt::value<std::string>(&src_file), "Mesh to load")
-    ;
+  hidden.add_options()("mesh", opt::value<std::string>(&src_file),
+                       "Mesh to load");
 
   opt::positional_options_description pos;
   pos.add("mesh", -1);
@@ -164,9 +160,13 @@ int main(int argc, char **argv) {
 
   opt::variables_map vm;
   try {
-    opt::store(opt::command_line_parser(argc, argv).options(cmdline).positional(pos).run(), vm);
+    opt::store(opt::command_line_parser(argc, argv)
+                   .options(cmdline)
+                   .positional(pos)
+                   .run(),
+               vm);
     opt::notify(vm);
-  } catch(opt::error &e) {
+  } catch (opt::error& e) {
     std::cerr << e.what() << std::endl;
     std::cerr << help << "\n";
     exit(1);
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
   }
 
   try {
-    mesh_t *mesh;
+    mesh_t* mesh;
 
     gloop::ply::PlyReader file;
     if (src_file == "-") {
@@ -191,7 +191,8 @@ int main(int argc, char **argv) {
     } else {
       std::ifstream inf(src_file.c_str());
       if (!inf.good()) {
-        std::cerr << "could not open " << src_file << " for reading" << std::endl;
+        std::cerr << "could not open " << src_file << " for reading"
+                  << std::endl;
         exit(1);
       }
       io::read_mesh(inf, file, mesh);
@@ -206,7 +207,7 @@ int main(int argc, char **argv) {
 
     delete mesh;
 
-  } catch(std::runtime_error e) {
+  } catch (std::runtime_error e) {
     std::cerr << "oops. something went wrong.\n" << e.what() << "\n";
   }
 }

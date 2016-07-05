@@ -36,48 +36,41 @@
 #include <map>
 
 namespace gloop {
-  namespace obj {
+namespace obj {
 
-    // an obj file is an ascii format.
-    // comment lines are denoted by #
-    // primitives are presented one per line, with \ representing a continuation.
-    // the first whitespace delimted token on each line denotes the type of element represented on the line.
+// an obj file is an ascii format.
+// comment lines are denoted by #
+// primitives are presented one per line, with \ representing a continuation.
+// the first whitespace delimted token on each line denotes the type of element
+// represented on the line.
 
-    class ObjReader : public stream::model_reader {
+class ObjReader : public stream::model_reader {
+  bool readDoubles(std::istream& in,
+                   stream::reader_base* e_rd,
+                   stream::reader_base** v_rd,
+                   size_t min_count,
+                   size_t rd_count,
+                   const double* defaults);
+  bool readIntLists(std::istream& in,
+                    stream::reader_base* e_rd,
+                    stream::reader_base** v_rd,
+                    size_t rd_count);
 
-      bool readDoubles(std::istream &in,
-                       stream::reader_base *e_rd,
-                       stream::reader_base **v_rd,
-                       size_t min_count,
-                       size_t rd_count,
-                       const double *defaults);
-      bool readIntLists(std::istream &in,
-                        stream::reader_base *e_rd,
-                        stream::reader_base **v_rd,
-                        size_t rd_count);
+ public:
+  ObjReader() : stream::model_reader() {}
 
-    public:
-      ObjReader() : stream::model_reader() {
-      }
+  virtual ~ObjReader() {}
 
-      virtual ~ObjReader() {
-      }
+  virtual bool read(std::istream& in);
+};
 
-      virtual bool read(std::istream &in);
-    };
+class ObjWriter : public stream::model_writer {
+ public:
+  ObjWriter() : stream::model_writer() {}
 
-    class ObjWriter : public stream::model_writer {
+  virtual ~ObjWriter() {}
 
-    public:
-
-      ObjWriter() : stream::model_writer() {
-      }
-
-      virtual ~ObjWriter() {
-      }
-
-      virtual bool write(std::ostream &in);
-    };
-
-  }
+  virtual bool write(std::ostream& in);
+};
+}
 }

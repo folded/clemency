@@ -20,10 +20,10 @@
 #include <gtest/gtest.h>
 #include <clemency/geom.hpp>
 
-TEST(closest_point, closest_point)
-{
+TEST(closest_point, closest_point) {
   // come up with more tests. these are kind of trivial.
-  qbezier2d_t bezier(v2d_t::init(0.0, 1.0), v2d_t::init(0.0, 0.0), v2d_t::init(1.0, 0.0));
+  qbezier2d_t bezier(v2d_t::init(0.0, 1.0), v2d_t::init(0.0, 0.0),
+                     v2d_t::init(1.0, 0.0));
   std::pair<v2d_t, double> result;
 
   result = bezier.closest_point(v2d_t::init(0.5, 0.5));

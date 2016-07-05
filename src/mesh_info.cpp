@@ -46,19 +46,16 @@
 
 namespace opt = boost::program_options;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   std::string src_file;
 
   opt::options_description generic;
-  generic.add_options()
-    ("help,h",                                                       "Print help and exit")
-    ("version,v",                                                    "Print version string")
-    ;
+  generic.add_options()("help,h", "Print help and exit")(
+      "version,v", "Print version string");
 
   opt::options_description hidden;
-  hidden.add_options()
-    ("mesh", opt::value<std::string>(&src_file), "Mesh to load")
-    ;
+  hidden.add_options()("mesh", opt::value<std::string>(&src_file),
+                       "Mesh to load");
 
   opt::positional_options_description pos;
   pos.add("mesh", -1);
@@ -71,9 +68,13 @@ int main(int argc, char **argv) {
 
   opt::variables_map vm;
   try {
-    opt::store(opt::command_line_parser(argc, argv).options(cmdline).positional(pos).run(), vm);
+    opt::store(opt::command_line_parser(argc, argv)
+                   .options(cmdline)
+                   .positional(pos)
+                   .run(),
+               vm);
     opt::notify(vm);
-  } catch(opt::error &e) {
+  } catch (opt::error& e) {
     std::cerr << e.what() << std::endl;
     std::cerr << help << "\n";
     exit(1);
@@ -91,7 +92,7 @@ int main(int argc, char **argv) {
 
   try {
     typedef triangle_mesh_t<vert_t, tri_t> mesh_t;
-    mesh_t *mesh;
+    mesh_t* mesh;
 
     gloop::ply::PlyReader file;
     if (src_file == "-") {
@@ -99,7 +100,8 @@ int main(int argc, char **argv) {
     } else {
       std::ifstream inf(src_file.c_str());
       if (!inf.good()) {
-        std::cerr << "could not open " << src_file << " for reading" << std::endl;
+        std::cerr << "could not open " << src_file << " for reading"
+                  << std::endl;
         exit(1);
       }
       io::read_mesh(inf, file, mesh);
@@ -111,12 +113,11 @@ int main(int argc, char **argv) {
     }
 
     std::cout << "closed manifold: "
-              << (mesh->is_closed_manifold() ? "true" : "false")
-              << std::endl;
+              << (mesh->is_closed_manifold() ? "true" : "false") << std::endl;
 
     delete mesh;
 
-  } catch(std::runtime_error e) {
+  } catch (std::runtime_error e) {
     std::cerr << "oops. something went wrong.\n" << e.what() << "\n";
   }
 }

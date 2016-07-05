@@ -19,30 +19,24 @@
 
 #pragma once
 
-
-
 #include <clemency/geom/v3.hpp>
 
-
-
-template<typename num_t>
+template <typename num_t>
 class quat_t {
-public:
+ public:
   num_t a;
   v3_t<num_t> b;
 
-  static quat_t zero() {
-    return quat_t::init(0.0, v3_t<num_t>::zero());
-  }
+  static quat_t zero() { return quat_t::init(0.0, v3_t<num_t>::zero()); }
 
-  static quat_t init(num_t a, const v3_t<num_t> &b) {
+  static quat_t init(num_t a, const v3_t<num_t>& b) {
     quat_t result;
     result.a = a;
     result.b = b;
     return result;
   }
 
-  static quat_t rot(num_t angle, const v3_t<num_t> &axis) {
+  static quat_t rot(num_t angle, const v3_t<num_t>& axis) {
     quat_t r;
     num_t len = axis.length();
     if (std::abs(len) > num_t(1e-10)) {
@@ -63,75 +57,63 @@ public:
     return r;
   }
 
-  quat_t sq() const {
-    return init(a * a - b.lengthsq(), b.scale(2.0 * a));
-  }
+  quat_t sq() const { return init(a * a - b.lengthsq(), b.scale(2.0 * a)); }
 
-  num_t length() const {
-    return ::sqrt(quat_t::dot(*this, *this));
-  }
+  num_t length() const { return ::sqrt(quat_t::dot(*this, *this)); }
 
-  num_t lengthsq() const {
-    return quat_t::dot(*this, *this);
-  }
+  num_t lengthsq() const { return quat_t::dot(*this, *this); }
 
-  quat_t scale(num_t s) const {
-    return init(a * s, b.scale(s));
-  }
+  quat_t scale(num_t s) const { return init(a * s, b.scale(s)); }
 
-  quat_t normalize() const {
-    return scale(1.0/length());
-  }
+  quat_t normalize() const { return scale(1.0 / length()); }
 
-  static quat_t add(const quat_t &a, const quat_t &b) {
+  static quat_t add(const quat_t& a, const quat_t& b) {
     return init(a.a + b.a, a.b + b.b);
   }
 
-  static quat_t sub(const quat_t &a, const quat_t &b) {
+  static quat_t sub(const quat_t& a, const quat_t& b) {
     return init(a.a - b.a, a.b - b.b);
   }
 
-  static quat_t add(const quat_t &a, const quat_t &b, const quat_t &c) {
+  static quat_t add(const quat_t& a, const quat_t& b, const quat_t& c) {
     return init(a.a + b.a + c.a, a.b + b.b + c.b);
   }
 
-  static num_t dot(const quat_t &a, const quat_t &b) {
+  static num_t dot(const quat_t& a, const quat_t& b) {
     return a.a * b.a + v3_t<num_t>::dot(a.b, b.b);
   }
 
-  static quat_t mul(const quat_t &a, const quat_t &b) {
+  static quat_t mul(const quat_t& a, const quat_t& b) {
     return init(a.a * b.a - v3_t<num_t>::dot(a.b, b.b),
                 b.b.scale(a.a) + a.b.scale(b.a) + v3_t<num_t>::cross(a.b, b.b));
   }
 };
 
-template<typename num_t>
-quat_t<num_t> operator*(const quat_t<num_t> &a, const quat_t<num_t> &b) {
+template <typename num_t>
+quat_t<num_t> operator*(const quat_t<num_t>& a, const quat_t<num_t>& b) {
   return quat_t<num_t>::mul(a, b);
 }
 
-template<typename num_t>
-static  inline quat_t<num_t> operator*(num_t a, const quat_t<num_t> &b) {
+template <typename num_t>
+static inline quat_t<num_t> operator*(num_t a, const quat_t<num_t>& b) {
   return b.scale(a);
 }
 
-template<typename num_t>
-quat_t<num_t> operator+(const quat_t<num_t> &a, const quat_t<num_t> &b) {
+template <typename num_t>
+quat_t<num_t> operator+(const quat_t<num_t>& a, const quat_t<num_t>& b) {
   return quat_t<num_t>::add(a, b);
 }
 
-template<typename num_t>
-quat_t<num_t> operator-(const quat_t<num_t> &a, const quat_t<num_t> &b) {
+template <typename num_t>
+quat_t<num_t> operator-(const quat_t<num_t>& a, const quat_t<num_t>& b) {
   return quat_t<num_t>::sub(a, b);
 }
 
-template<typename num_t>
-std::ostream &operator<<(std::ostream &out, const quat_t<num_t> &q) {
+template <typename num_t>
+std::ostream& operator<<(std::ostream& out, const quat_t<num_t>& q) {
   out << "<" << q.a << ";" << q.b.x << "," << q.b.y << "," << q.b.z << ">";
   return out;
 }
 
-
-
 typedef quat_t<double> quatd_t;
-typedef quat_t<float>  quatf_t;
+typedef quat_t<float> quatf_t;

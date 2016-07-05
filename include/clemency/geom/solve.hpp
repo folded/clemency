@@ -19,31 +19,32 @@
 
 #pragma once
 
-
-
 #include <math.h>
 #include <vector>
 
+static inline std::vector<double> solve1(double a,
+                                         double b,
+                                         const double zero = 1e-10) {
+  std::vector<double> r;
 
+  if (std::abs(a) > zero) {
+    r.push_back(-b / a);
+  }
 
-static inline std::vector<double> solve1(double a, double b, const double zero = 1e-10) {
-    std::vector<double> r;
-
-    if (std::abs(a) > zero) {
-      r.push_back(-b / a);
-    }
-
-    return r;
+  return r;
 }
 
-static inline std::vector<double> solve2(double a, double b, double c, const double zero = 1e-10) {
+static inline std::vector<double> solve2(double a,
+                                         double b,
+                                         double c,
+                                         const double zero = 1e-10) {
   std::vector<double> r;
 
   if (std::abs(a) < zero) {
     return solve1(b, c, zero);
   }
 
-  double D = b*b - 4.0*a*c;
+  double D = b * b - 4.0 * a * c;
   if (D > 0) {
     if (D < zero) {
       r.push_back(-b / (2.0 * a));
@@ -59,7 +60,11 @@ static inline std::vector<double> solve2(double a, double b, double c, const dou
   return r;
 }
 
-static inline std::vector<double> solve3(double a, double b, double c, double d, const double zero = 1e-10) {
+static inline std::vector<double> solve3(double a,
+                                         double b,
+                                         double c,
+                                         double d,
+                                         const double zero = 1e-10) {
   std::vector<double> r;
 
   if (std::abs(a) < zero) {
@@ -70,18 +75,18 @@ static inline std::vector<double> solve3(double a, double b, double c, double d,
   c /= a;
   d /= a;
 
-  double p = c - b*b / 3.0;
-  double q = b * (2.0*b*b - 9.0*c) / 27.0 + d;
-  double p3 = p*p*p;
-  double D = q*q + 4.0*p3 / 27.0;
+  double p = c - b * b / 3.0;
+  double q = b * (2.0 * b * b - 9.0 * c) / 27.0 + d;
+  double p3 = p * p * p;
+  double D = q * q + 4.0 * p3 / 27.0;
   double offset = -b / 3.0;
 
   if (D > zero) {
     double z = ::sqrt(D);
     double u = (-q + z) / 2.0;
     double v = (-q - z) / 2.0;
-    u = (u >= 0) ? ::pow(u, 1.0/3.0) : -::pow(-u, 1.0/3.0);
-    v = (v >= 0) ? ::pow(v, 1.0/3.0) : -::pow(-v, 1.0/3.0);
+    u = (u >= 0) ? ::pow(u, 1.0 / 3.0) : -::pow(-u, 1.0 / 3.0);
+    v = (v >= 0) ? ::pow(v, 1.0 / 3.0) : -::pow(-v, 1.0 / 3.0);
 
     r.push_back(u + v + offset);
   } else if (D < -zero) {
@@ -94,11 +99,12 @@ static inline std::vector<double> solve3(double a, double b, double c, double d,
     r.push_back(u * ::cos(v + 2.0 * M_PI / 3.0) + offset);
     r.push_back(u * ::cos(v + 4.0 * M_PI / 3.0) + offset);
   } else {
-    double u = (q < 0) ? ::pow(-q / 2.0, 1.0 / 3.0) : -::pow(q / 2.0, 1.0 / 3.0);
+    double u =
+        (q < 0) ? ::pow(-q / 2.0, 1.0 / 3.0) : -::pow(q / 2.0, 1.0 / 3.0);
 
     r.reserve(2);
 
-    r.push_back(2.0*u + offset);
+    r.push_back(2.0 * u + offset);
     r.push_back(-u + offset);
   }
 

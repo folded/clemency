@@ -33,86 +33,78 @@
 
 namespace gloop {
 
-  namespace buffer {
-    enum XferType {
-      STATIC = GL_STATIC_DRAW_ARB,
-      DYNAMIC = GL_DYNAMIC_DRAW_ARB,
-      STREAM = GL_STREAM_DRAW_ARB
-    };
-    
-    enum AccessType {
-      RO = GL_READ_ONLY_ARB,
-      RW = GL_READ_WRITE_ARB,
-      WO = GL_WRITE_ONLY_ARB
-    };
-    
-    template<typename Transfer, GLuint BUFTYPE = GL_ARRAY_BUFFER_ARB>
-    struct VBO {
-      typedef Transfer FMT;
-        
-      size_t vbo_size;
-      XferType xfer_type;
-      GLuint vbo;
-      Transfer *buf;
-      Transfer *base;
-        
-      VBO(size_t buflen, XferType xfer) : vbo_size(buflen), xfer_type(xfer), vbo(0), buf(NULL) {
-        glGenBuffersARB(1 , &vbo);
-      }
+namespace buffer {
+enum XferType {
+  STATIC = GL_STATIC_DRAW_ARB,
+  DYNAMIC = GL_DYNAMIC_DRAW_ARB,
+  STREAM = GL_STREAM_DRAW_ARB
+};
 
-      ~VBO() {
-        glDeleteBuffersARB(1, &vbo);
-      }
-        
-      void bind() {
-        glBindBufferARB(BUFTYPE, vbo);
-      }
+enum AccessType {
+  RO = GL_READ_ONLY_ARB,
+  RW = GL_READ_WRITE_ARB,
+  WO = GL_WRITE_ONLY_ARB
+};
 
-      void data(size_t size, void *mem = NULL) {
-        glBufferDataARB(BUFTYPE, sizeof(Transfer) * (vbo_size = size), mem, xfer_type);
-      }
+template <typename Transfer, GLuint BUFTYPE = GL_ARRAY_BUFFER_ARB>
+struct VBO {
+  typedef Transfer FMT;
 
-      void data(void *mem = NULL) {
-        glBufferDataARB(BUFTYPE, sizeof(Transfer) * vbo_size, mem, xfer_type);
-      }
+  size_t vbo_size;
+  XferType xfer_type;
+  GLuint vbo;
+  Transfer* buf;
+  Transfer* base;
 
-      void map(AccessType access = WO) {
-        buf = base = (Transfer *)glMapBufferARB(BUFTYPE, access);
-      }
-        
-      void push(const Transfer *data) {
-        *buf++ = *data;
-      }
-      void push(const Transfer *data, int count) {
-        while (count--) *buf++ = *data;
-      }
-      void pull(Transfer *data) {
-        *data = *buf++;
-      }
-      void pull(const Transfer *data, int count) {
-        while (count--) *data = *buf++;
-      }
-      
-      Transfer &operator[](int i) {
-        return base[i];
-      }
-        
-      void unmap() {
-        glUnmapBufferARB(BUFTYPE);
-        buf = base = NULL;
-      }
-        
-      void unbind() {
-        glBindBufferARB(BUFTYPE, 0);
-      }
-  private:
-      VBO();
-      VBO(const VBO &);
-      VBO &operator=(const VBO &);
-    };
+  VBO(size_t buflen, XferType xfer)
+      : vbo_size(buflen), xfer_type(xfer), vbo(0), buf(NULL) {
+    glGenBuffersARB(1, &vbo);
+  }
 
-    typedef VBO<GLuint, GL_ELEMENT_ARRAY_BUFFER_ARB> IBO32;
-    typedef VBO<GLushort, GL_ELEMENT_ARRAY_BUFFER_ARB> IBO16;
-  };
+  ~VBO() { glDeleteBuffersARB(1, &vbo); }
 
+  void bind() { glBindBufferARB(BUFTYPE, vbo); }
+
+  void data(size_t size, void* mem = NULL) {
+    glBufferDataARB(BUFTYPE, sizeof(Transfer) * (vbo_size = size), mem,
+                    xfer_type);
+  }
+
+  void data(void* mem = NULL) {
+    glBufferDataARB(BUFTYPE, sizeof(Transfer) * vbo_size, mem, xfer_type);
+  }
+
+  void map(AccessType access = WO) {
+    buf = base = (Transfer*)glMapBufferARB(BUFTYPE, access);
+  }
+
+  void push(const Transfer* data) { *buf++ = *data; }
+  void push(const Transfer* data, int count) {
+    while (count--)
+      *buf++ = *data;
+  }
+  void pull(Transfer* data) { *data = *buf++; }
+  void pull(const Transfer* data, int count) {
+    while (count--)
+      *data = *buf++;
+  }
+
+  Transfer& operator[](int i) { return base[i]; }
+
+  void unmap() {
+    glUnmapBufferARB(BUFTYPE);
+    buf = base = NULL;
+  }
+
+  void unbind() { glBindBufferARB(BUFTYPE, 0); }
+
+ private:
+  VBO();
+  VBO(const VBO&);
+  VBO& operator=(const VBO&);
+};
+
+typedef VBO<GLuint, GL_ELEMENT_ARRAY_BUFFER_ARB> IBO32;
+typedef VBO<GLushort, GL_ELEMENT_ARRAY_BUFFER_ARB> IBO16;
+};
 }

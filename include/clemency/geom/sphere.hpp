@@ -19,62 +19,54 @@
 
 #pragma once
 
-
-
 #include <boost/random.hpp>
-
-
 
 #include <clemency/geom/v3.hpp>
 
-
-
-template<typename num_t>
+template <typename num_t>
 class sphere_t {
-public:
+ public:
   v3_t<num_t> v;
   num_t r;
 
-  static sphere_t init(const v3_t<num_t> &v, num_t r) {
+  static sphere_t init(const v3_t<num_t>& v, num_t r) {
     sphere_t result;
     result.v = v;
     result.r = r;
     return result;
   }
 
-  bool contains(const v3_t<num_t> &p) const {
+  bool contains(const v3_t<num_t>& p) const {
     return v3_t<num_t>::sub(p, v).lengthsq() <= r * r;
   }
 
-  bool intersects(const v3_t<num_t> &p) const {
-    return contains(p);
-  }
+  bool intersects(const v3_t<num_t>& p) const { return contains(p); }
 
-  bool contains(const sphere_t &sp) const {
+  bool contains(const sphere_t& sp) const {
     return v3_t<num_t>::sub(sp.v, v).lengthsq() <= (r - sp.r) * (r - sp.r);
   }
 
-  bool intersects(const sphere_t &sp) const {
+  bool intersects(const sphere_t& sp) const {
     return v3_t<num_t>::sub(sp.v, v).lengthsq() <= (r + sp.r) * (r + sp.r);
   }
 };
 
-
-
-template<typename rng_t, typename num_t>
-v3_t<num_t> randomOnSphere(rng_t &rng, const sphere_t<num_t> &sp) {
+template <typename rng_t, typename num_t>
+v3_t<num_t> randomOnSphere(rng_t& rng, const sphere_t<num_t>& sp) {
   boost::uniform_on_sphere<num_t> distrib(3);
-  boost::variate_generator<rng_t &, boost::uniform_on_sphere<num_t> > gen(rng, distrib);
+  boost::variate_generator<rng_t&, boost::uniform_on_sphere<num_t> > gen(
+      rng, distrib);
   return v3_t<num_t>::add(v3_t<num_t>::init(gen()).scale(sp.r), sp.v);
 }
 
-
-
-template<typename rng_t, typename num_t>
-v3_t<num_t> randomInSphere(rng_t &rng, const sphere_t<num_t> &sp) {
+template <typename rng_t, typename num_t>
+v3_t<num_t> randomInSphere(rng_t& rng, const sphere_t<num_t>& sp) {
   boost::uniform_on_sphere<num_t> distrib(3);
   boost::uniform_01<num_t> uniform;
-  boost::variate_generator<rng_t &, boost::uniform_on_sphere<num_t> > gen(rng, distrib);
-  boost::variate_generator<rng_t &, boost::uniform_01<num_t> > genu(rng, uniform);
-  return v3_t<num_t>::add(v3_t<num_t>::init(gen()).scale(sp.r * pow(genu(), 1.0/3.0)), sp.v);
+  boost::variate_generator<rng_t&, boost::uniform_on_sphere<num_t> > gen(
+      rng, distrib);
+  boost::variate_generator<rng_t&, boost::uniform_01<num_t> > genu(rng,
+                                                                   uniform);
+  return v3_t<num_t>::add(
+      v3_t<num_t>::init(gen()).scale(sp.r * pow(genu(), 1.0 / 3.0)), sp.v);
 }

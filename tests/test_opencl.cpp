@@ -25,7 +25,7 @@ TEST(OpenCL, OpenCL) {
 
   opencl.init();
 
-  cl::dev_t *gpu_dev = opencl.gpu_devices()[0];
+  cl::dev_t* gpu_dev = opencl.gpu_devices()[0];
 
   ASSERT_TRUE(gpu_dev != NULL);
   ASSERT_TRUE(gpu_dev->is_gpu());
@@ -40,12 +40,13 @@ TEST(OpenCL, OpenCL) {
 
   cl::queue_t queue(ctx, *gpu_dev);
 
-  cl::program_t prog = ctx.create_program_from_source("__kernel void saxpy(const float alpha,\n"
-                                                      "                    __global const float* X,\n"
-                                                      "                    __global float* Y)\n"
-                                                      "{\n"
-                                                      "    Y[get_global_id(0)] += alpha * X[get_global_id(0)];\n"
-                                                      "}\n");
+  cl::program_t prog = ctx.create_program_from_source(
+      "__kernel void saxpy(const float alpha,\n"
+      "                    __global const float* X,\n"
+      "                    __global float* Y)\n"
+      "{\n"
+      "    Y[get_global_id(0)] += alpha * X[get_global_id(0)];\n"
+      "}\n");
 
   ASSERT_EQ(prog.build_status(*gpu_dev), CL_BUILD_NONE);
   ASSERT_TRUE(prog.build());
@@ -59,15 +60,19 @@ TEST(OpenCL, OpenCL) {
     cpuY[i] = 1.0;
   }
 
-  cl_mem memX = ctx.create_buffer(CL_MEM_READ_ONLY  | CL_MEM_USE_HOST_PTR, N * sizeof(float), cpuX);
-  cl_mem memY = ctx.create_buffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, N * sizeof(float), cpuY);
+  cl_mem memX = ctx.create_buffer(CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                                  N * sizeof(float), cpuX);
+  cl_mem memY = ctx.create_buffer(CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+                                  N * sizeof(float), cpuY);
 
   ASSERT_NE(memX, (cl_mem)NULL);
   ASSERT_NE(memY, (cl_mem)NULL);
 
   {
-    cl::event_t e1 = queue.async(cl::cmd_write_buffer(memX, CL_FALSE, 0, N * sizeof(float), cpuX));
-    cl::event_t e2 = queue.async(cl::cmd_write_buffer(memY, CL_FALSE, 0, N * sizeof(float), cpuY), e1);
+    cl::event_t e1 = queue.async(
+        cl::cmd_write_buffer(memX, CL_FALSE, 0, N * sizeof(float), cpuX));
+    cl::event_t e2 = queue.async(
+        cl::cmd_write_buffer(memY, CL_FALSE, 0, N * sizeof(float), cpuY), e1);
     e2.wait();
   }
 
@@ -81,7 +86,8 @@ TEST(OpenCL, OpenCL) {
   queue.sync(cl::cmd_task(kern).wrk_sz(N));
 
   {
-    cl::event_t e1 = queue.async(cl::cmd_read_buffer(memY, CL_FALSE, 0, N * sizeof(float), cpuY));
+    cl::event_t e1 = queue.async(
+        cl::cmd_read_buffer(memY, CL_FALSE, 0, N * sizeof(float), cpuY));
     e1.wait();
   }
 

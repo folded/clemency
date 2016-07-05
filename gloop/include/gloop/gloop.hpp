@@ -30,10 +30,9 @@
 #pragma once
 
 #if defined(_MSC_VER)
-#  pragma warning(disable:4201)
+#pragma warning(disable : 4201)
 #endif
 
 #include <gloop/ref.hpp>
 #include <gloop/stringfuncs.hpp>
 #include <gloop/exceptions.hpp>
-

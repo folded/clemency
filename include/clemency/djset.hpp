@@ -23,8 +23,7 @@
 #include <unordered_map>
 
 class djset {
-
-protected:
+ protected:
   struct elem {
     size_t parent, rank;
     elem(size_t p, size_t r) : parent(p), rank(r) {}
@@ -34,22 +33,21 @@ protected:
   std::vector<elem> set;
   size_t n_sets;
 
-public:
-  djset() : set(), n_sets(0) {
-  }
+ public:
+  djset() : set(), n_sets(0) {}
 
   djset(size_t N) {
     n_sets = N;
     set.reserve(N);
     for (size_t i = 0; i < N; ++i) {
-      set.push_back(elem(i,0));
+      set.push_back(elem(i, 0));
     }
   }
 
   void init(size_t N) {
     if (N == set.size()) {
       for (size_t i = 0; i < N; ++i) {
-        set[i] = elem(i,0);
+        set[i] = elem(i, 0);
       }
       n_sets = N;
     } else {
@@ -59,15 +57,15 @@ public:
     }
   }
 
-  size_t count() const {
-    return n_sets;
-  }
+  size_t count() const { return n_sets; }
 
   size_t find_set_head(size_t a) {
-    if (a == set[a].parent) return a;
-    
+    if (a == set[a].parent)
+      return a;
+
     size_t a_head = a;
-    while (set[a_head].parent != a_head) a_head = set[a_head].parent;
+    while (set[a_head].parent != a_head)
+      a_head = set[a_head].parent;
     set[a].parent = a_head;
     return a_head;
   }
@@ -92,19 +90,21 @@ public:
     }
   }
 
-  void get_index_to_set(std::vector<size_t> &index_set) {
+  void get_index_to_set(std::vector<size_t>& index_set) {
     index_set.clear();
     index_set.resize(set.size(), n_sets);
 
     size_t c = 0;
     for (size_t i = 0; i < set.size(); ++i) {
       size_t s = find_set_head(i);
-      if (index_set[s] == n_sets) index_set[s] = c++;
+      if (index_set[s] == n_sets)
+        index_set[s] = c++;
       index_set[i] = index_set[s];
     }
   }
 
-  void get_index_to_set(std::vector<size_t> &index_set, std::vector<size_t> &set_size) {
+  void get_index_to_set(std::vector<size_t>& index_set,
+                        std::vector<size_t>& set_size) {
     index_set.clear();
     index_set.resize(set.size(), n_sets);
     set_size.clear();
@@ -113,14 +113,15 @@ public:
     size_t c = 0;
     for (size_t i = 0; i < set.size(); ++i) {
       size_t s = find_set_head(i);
-      if (index_set[s] == n_sets) index_set[s] = c++;
+      if (index_set[s] == n_sets)
+        index_set[s] = c++;
       index_set[i] = index_set[s];
       set_size[index_set[s]]++;
     }
   }
 
-  template<typename in_iter_t, typename out_collection_t>
-  void collate(in_iter_t in, out_collection_t &out) {
+  template <typename in_iter_t, typename out_collection_t>
+  void collate(in_iter_t in, out_collection_t& out) {
     std::unordered_map<size_t, size_t> set_id;
     out.clear();
     out.resize(n_sets);
@@ -134,13 +135,14 @@ public:
         s = (*id).second;
       }
 
-      std::insert_iterator<typename out_collection_t::value_type> j(out[s], out[s].end());
+      std::insert_iterator<typename out_collection_t::value_type> j(
+          out[s], out[s].end());
       *j = *in++;
     }
   }
 
-  template<typename out_collection_t>
-  void collate(out_collection_t &out) {
+  template <typename out_collection_t>
+  void collate(out_collection_t& out) {
     std::unordered_map<size_t, size_t> set_id;
     out.clear();
     out.resize(n_sets);
@@ -153,7 +155,8 @@ public:
       } else {
         s = (*id).second;
       }
-      std::insert_iterator<typename out_collection_t::value_type> j(out[s], out[s].end());
+      std::insert_iterator<typename out_collection_t::value_type> j(
+          out[s], out[s].end());
       *j = i;
     }
   }

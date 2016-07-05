@@ -33,6 +33,5 @@
 
 namespace gloop {
 
-  GLfloat TextureParam::s_max_anisotropy = 0.0;
-
+GLfloat TextureParam::s_max_anisotropy = 0.0;
 }

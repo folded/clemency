@@ -20,37 +20,28 @@
 #include <gtest/gtest.h>
 #include <clemency/geom.hpp>
 
-TEST(matrix_det, matrix_det)
-{
-  m3d_t mat = m3d_t::init(+1, +3, +0,
-                          +2, -2, +1,
-                          -4, +1, -1);
+TEST(matrix_det, matrix_det) {
+  m3d_t mat = m3d_t::init(+1, +3, +0, +2, -2, +1, -4, +1, -1);
   EXPECT_EQ(mat.determinant(), -5);
 }
 
-TEST(matrix_mdet, matrix_mdet)
-{
-  m3d_t mat = m3d_t::init(+1, +3, +0,
-                          +2, -2, +1,
-                          -4, +1, -1);
-  EXPECT_EQ(mat.mdet(0,0), 1);
-  EXPECT_EQ(mat.mdet(1,0), 2);
-  EXPECT_EQ(mat.mdet(2,0), -6);
+TEST(matrix_mdet, matrix_mdet) {
+  m3d_t mat = m3d_t::init(+1, +3, +0, +2, -2, +1, -4, +1, -1);
+  EXPECT_EQ(mat.mdet(0, 0), 1);
+  EXPECT_EQ(mat.mdet(1, 0), 2);
+  EXPECT_EQ(mat.mdet(2, 0), -6);
 
-  EXPECT_EQ(mat.mdet(0,1), -3);
-  EXPECT_EQ(mat.mdet(1,1), -1);
-  EXPECT_EQ(mat.mdet(2,1), 13);
+  EXPECT_EQ(mat.mdet(0, 1), -3);
+  EXPECT_EQ(mat.mdet(1, 1), -1);
+  EXPECT_EQ(mat.mdet(2, 1), 13);
 
-  EXPECT_EQ(mat.mdet(0,2), 3);
-  EXPECT_EQ(mat.mdet(1,2), 1);
-  EXPECT_EQ(mat.mdet(2,2), -8);
+  EXPECT_EQ(mat.mdet(0, 2), 3);
+  EXPECT_EQ(mat.mdet(1, 2), 1);
+  EXPECT_EQ(mat.mdet(2, 2), -8);
 }
 
-TEST(matrix_inv, matrix_inv)
-{
-  m3d_t mat = m3d_t::init(+1, +3, +0,
-                          +2, -2, +1,
-                          -4, +1, -1);
+TEST(matrix_inv, matrix_inv) {
+  m3d_t mat = m3d_t::init(+1, +3, +0, +2, -2, +1, -4, +1, -1);
   m3d_t inv;
   double det;
   EXPECT_TRUE(mat.invert(inv, det));

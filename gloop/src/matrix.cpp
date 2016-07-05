@@ -30,7 +30,4 @@
 #include <gloop/gloop.hpp>
 #include <gloop/gloop-math.hpp>
 
-namespace gloop {
-
-
-}
+namespace gloop {}

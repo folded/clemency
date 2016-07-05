@@ -34,17 +34,14 @@
 
 namespace gloop {
 
-  struct exception {
-  private:
-    mutable std::string err;
+struct exception {
+ private:
+  mutable std::string err;
 
-  public:
-    exception(const std::string &e) : err(e) { }
-    exception() : err() { }
+ public:
+  exception(const std::string& e) : err(e) {}
+  exception() : err() {}
 
-    const std::string &str() const {
-      return err;
-    }
-  };
-
+  const std::string& str() const { return err; }
+};
 }

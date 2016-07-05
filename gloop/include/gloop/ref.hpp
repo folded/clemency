@@ -34,160 +34,155 @@
 
 namespace gloop {
 
-  template<typename T>
-  struct RefCounter {
-    typedef T *ptr_type;
-    typedef T ref_type;
+template <typename T>
+struct RefCounter {
+  typedef T* ptr_type;
+  typedef T ref_type;
 
-    static void incref(T * const &t) { t->incref(); }
-    static void decref(T * const &t) { t->decref(); }
-    static T &deref(T * const &t) { return *t; }
-  };
+  static void incref(T* const& t) { t->incref(); }
+  static void decref(T* const& t) { t->decref(); }
+  static T& deref(T* const& t) { return *t; }
+};
 
-  class RefObj {
-    mutable int __refcount;
+class RefObj {
+  mutable int __refcount;
 
-    RefObj(const RefObj &);
-    RefObj &operator=(const RefObj &);
+  RefObj(const RefObj&);
+  RefObj& operator=(const RefObj&);
 
-  protected:
-    virtual ~RefObj() {
+ protected:
+  virtual ~RefObj() {}
+
+ public:
+  void incref() const { __refcount++; }
+  void decref() const {
+    --__refcount;
+    if (!__refcount) {
+      delete this;
     }
+  }
 
-  public:
-    void incref() const {
-      __refcount++;
+  int refcount() const { return __refcount; }
+  RefObj() : __refcount(0) {}
+};
+
+class MonitoredRefObj {
+  mutable int __refcount;
+
+  MonitoredRefObj(const MonitoredRefObj&);
+  MonitoredRefObj& operator=(const MonitoredRefObj&);
+
+ protected:
+  virtual void refcountIncreased(int /* refcount */) const {}
+  virtual void refcountDecreased(int /* refcount */) const {}
+
+  virtual ~MonitoredRefObj() {}
+
+ public:
+  void incref() const {
+    __refcount++;
+    refcountIncreased(__refcount);
+  }
+  void decref() const {
+    // refcountDecreased() could potentially cause other changes to
+    // the refcount, so after the initial decrease, we keep a copy of
+    // the value so the object can only be deleted in one place.
+
+    // XXX: if the refcount drops to zero, it can't be rescued inside
+    // refcountDecreased. This isn't a problem for what we initially
+    // want to use MonitoredMonitoredRefObj for, whereas the above scenario is.
+    int r = --__refcount;
+    refcountDecreased(r);
+    if (!r) {
+      delete this;
     }
-    void decref() const {
-      --__refcount;
-      if (!__refcount) {
-        delete this;
-      }
-    }
+  }
 
-    int refcount() const {
-      return __refcount;
-    }
-    RefObj() : __refcount(0) {
-    }
-  };
+  int refcount() const { return __refcount; }
+  MonitoredRefObj() : __refcount(0) {}
+};
 
-  class MonitoredRefObj {
-    mutable int __refcount;
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
 
-    MonitoredRefObj(const MonitoredRefObj &);
-    MonitoredRefObj &operator=(const MonitoredRefObj &);
+template <>
+struct RefCounter<id> {
+  typedef id ptr_type;
+  typedef id ref_type;
 
-  protected:
-    virtual void refcountIncreased(int /* refcount */) const {
-    }
-    virtual void refcountDecreased(int /* refcount */) const {
-    }
+  static void incref(id const& t) { [t retain]; }
+  static void decref(id const& t) { [t release]; }
+  static id deref(id const& t) { return const_cast<id>(t); }
+};
 
-    virtual ~MonitoredRefObj() {
-    }
+#endif
 
-  public:
-    void incref() const {
-      __refcount++;
-      refcountIncreased(__refcount);
-    }
-    void decref() const {
-      // refcountDecreased() could potentially cause other changes to
-      // the refcount, so after the initial decrease, we keep a copy of
-      // the value so the object can only be deleted in one place.
+template <typename T, typename R = RefCounter<T> >
+class Ref {
+  typename R::ptr_type pointee;
 
-      // XXX: if the refcount drops to zero, it can't be rescued inside
-      // refcountDecreased. This isn't a problem for what we initially
-      // want to use MonitoredMonitoredRefObj for, whereas the above scenario is.
-      int r = --__refcount;
-      refcountDecreased(r);
-      if (!r) {
-        delete this;
-      }
-    }
+ public:
+  Ref() : pointee(NULL) {}
+  template <typename U, typename S>
+  Ref(const Ref<U, S>& p) : pointee(NULL) {
+    *this = p;
+  }
+  Ref(const Ref& p) : pointee(NULL) { *this = p; }
+  Ref(typename R::ptr_type p) : pointee(p) {
+    if (pointee)
+      R::incref(pointee);
+  }
+  ~Ref() {
+    if (pointee)
+      R::decref(pointee);
+  }
 
-    int refcount() const {
-      return __refcount;
-    }
-    MonitoredRefObj() : __refcount(0) {
-    }
-  };
+  inline bool operator<(const Ref& rhs) const { return pointee < rhs.pointee; }
 
-  #ifdef __OBJC__
-  #import <Foundation/Foundation.h>
+  template <typename U, typename S>
+  Ref& operator=(const Ref<U, S>& p) {
+    if (p.ptr())
+      S::incref(p.ptr());
+    if (pointee)
+      R::decref(pointee);
+    pointee = p.ptr();
+    return *this;
+  }
+  Ref& operator=(const Ref& p) {
+    if (p.pointee)
+      R::incref(p.pointee);
+    if (pointee)
+      R::decref(pointee);
+    pointee = p.pointee;
+    return *this;
+  }
+  Ref& operator=(typename R::ptr_type p) {
+    if (p)
+      R::incref(p);
+    if (pointee)
+      R::decref(pointee);
+    pointee = p;
+    return *this;
+  }
 
-  template<>
-  struct RefCounter<id> {
-    typedef id ptr_type;
-    typedef id ref_type;
+  typename R::ref_type& operator*() const { return R::deref(pointee); }
 
-    static void incref(id const &t) { [t retain]; }
-    static void decref(id const &t) { [t release]; }
-    static id deref(id const &t) { return const_cast<id>(t); }
-  };
+  typename R::ptr_type operator->() const { return pointee; }
 
-  #endif
+  typename R::ptr_type ptr() const { return pointee; }
 
-  template<typename T, typename R = RefCounter<T> >
-  class Ref {
-    typename R::ptr_type pointee;
-  public:
-    Ref() : pointee(NULL) {
-    }
-    template<typename U, typename S>
-    Ref(const Ref<U, S> &p) : pointee(NULL) {
-      *this = p;
-    }
-    Ref(const Ref &p) : pointee(NULL) {
-      *this = p;
-    }
-    Ref(typename R::ptr_type p) : pointee(p) {
-      if (pointee) R::incref(pointee);
-    }
-    ~Ref() {
-      if (pointee) R::decref(pointee);
-    }
+  int refcount() const { return pointee->refcount(); }
 
-    inline bool operator<(const Ref &rhs) const {
-      return pointee < rhs.pointee;
-    }
+  template <typename U, typename S>
+  bool operator==(const Ref<U, S>& r) const {
+    return r.ptr() == pointee;
+  }
+  template <typename U, typename S>
+  bool operator!=(const Ref<U, S>& r) const {
+    return r.ptr() != pointee;
+  }
 
-    template<typename U, typename S>
-    Ref &operator=(const Ref<U, S> &p) {
-      if (p.ptr()) S::incref(p.ptr());
-      if (pointee) R::decref(pointee);
-      pointee = p.ptr();
-      return *this;
-    }
-    Ref &operator=(const Ref &p) {
-      if (p.pointee) R::incref(p.pointee);
-      if (pointee) R::decref(pointee);
-      pointee = p.pointee;
-      return *this;
-    }
-    Ref &operator=(typename R::ptr_type p) {
-      if (p) R::incref(p);
-      if (pointee) R::decref(pointee);
-      pointee = p;
-      return *this;
-    }
-
-    typename R::ref_type &operator*() const { return R::deref(pointee); }
-
-    typename R::ptr_type operator->() const { return pointee; }
-
-    typename R::ptr_type ptr() const { return pointee; }
-
-    int refcount() const { return pointee->refcount(); }
-
-    template<typename U, typename S>
-    bool operator==(const Ref<U, S> &r) const { return r.ptr() == pointee; }
-    template<typename U, typename S>
-    bool operator!=(const Ref<U, S> &r) const { return r.ptr() != pointee; }
-
-    bool operator==(const typename R::ptr_type r) const { return r == pointee; }
-    bool operator!=(const typename R::ptr_type r) const { return r != pointee; }
-  };
-
+  bool operator==(const typename R::ptr_type r) const { return r == pointee; }
+  bool operator!=(const typename R::ptr_type r) const { return r != pointee; }
+};
 }

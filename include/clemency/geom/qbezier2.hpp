@@ -19,25 +19,25 @@
 
 #pragma once
 
-
-
 #include <clemency/geom/v2.hpp>
 #include <clemency/geom/solve.hpp>
 
-
-
-template<typename num_t>
+template <typename num_t>
 struct qbezier2_t {
   v2_t<num_t> p0, p1, p2;
   num_t A, B, C;
 
-  void init(const v2_t<num_t> &_p0, const v2_t<num_t> &_p1, const v2_t<num_t> &_p2) {
+  void init(const v2_t<num_t>& _p0,
+            const v2_t<num_t>& _p1,
+            const v2_t<num_t>& _p2) {
     p0 = _p0;
     p1 = _p1 - _p0;
     p2 = _p2 - _p0;
 
-    A = num_t(+4) * v2_t<num_t>::dot(p1, p1) - num_t(4) * v2_t<num_t>::dot(p1, p2) + v2_t<num_t>::dot(p2, p2);
-    B = num_t(-6) * v2_t<num_t>::dot(p1, p1) + num_t(3) * v2_t<num_t>::dot(p1, p2);
+    A = num_t(+4) * v2_t<num_t>::dot(p1, p1) -
+        num_t(4) * v2_t<num_t>::dot(p1, p2) + v2_t<num_t>::dot(p2, p2);
+    B = num_t(-6) * v2_t<num_t>::dot(p1, p1) +
+        num_t(3) * v2_t<num_t>::dot(p1, p2);
     C = num_t(+2) * v2_t<num_t>::dot(p1, p1);
   }
 
@@ -45,17 +45,17 @@ struct qbezier2_t {
     init(v2_t<num_t>::zero(), v2_t<num_t>::zero(), v2_t<num_t>::zero());
   }
 
-  qbezier2_t(const v2_t<num_t> &_p0, const v2_t<num_t> &_p1, const v2_t<num_t> &_p2) {
+  qbezier2_t(const v2_t<num_t>& _p0,
+             const v2_t<num_t>& _p1,
+             const v2_t<num_t>& _p2) {
     init(_p0, _p1, _p2);
   }
 
   v2_t<num_t> get_relpos(num_t t) const {
-    return num_t(2) * t * (num_t(1) - t) * p1 + t*t * p2;
+    return num_t(2) * t * (num_t(1) - t) * p1 + t * t * p2;
   }
 
-  v2_t<num_t> get_pos(num_t t) const {
-    return p0 + get_relpos(t);
-  }
+  v2_t<num_t> get_pos(num_t t) const { return p0 + get_relpos(t); }
 
   v2_t<num_t> get_tangent(num_t t) const {
     return num_t(2) * (num_t(1) - t) * p1 + num_t(2) * t * (p2 - p1);
@@ -66,10 +66,7 @@ struct qbezier2_t {
     num_t p1p = v2_t<num_t>::dot(p1, p);
     num_t p2p = v2_t<num_t>::dot(p2, p);
 
-    std::vector<num_t> sol = solve3(A,
-                                    B,
-                                    C - p2p + num_t(2) * p1p,
-                                    -p1p);
+    std::vector<num_t> sol = solve3(A, B, C - p2p + num_t(2) * p1p, -p1p);
     num_t d;
     num_t min_dist = p.lengthsq();
     v2_t<num_t> min_pos = v2_t<num_t>::zero();
@@ -95,7 +92,8 @@ struct qbezier2_t {
     }
 
     min_dist = ::sqrt(min_dist);
-    if (v2_t<num_t>::orient(min_pos, min_pos + get_tangent(min_t), p) < num_t(0)) {
+    if (v2_t<num_t>::orient(min_pos, min_pos + get_tangent(min_t), p) <
+        num_t(0)) {
       min_dist = -min_dist;
     }
 
@@ -103,7 +101,5 @@ struct qbezier2_t {
   }
 };
 
-
-
 typedef qbezier2_t<double> qbezier2d_t;
-typedef qbezier2_t<float>  qbezier2f_t;
+typedef qbezier2_t<float> qbezier2f_t;

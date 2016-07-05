@@ -37,32 +37,28 @@
 #include <list>
 
 namespace gloop {
-  namespace ply {
+namespace ply {
 
-    class PlyReader : public stream::model_reader {
-    public:
-      PlyReader() : stream::model_reader() {
-      }
+class PlyReader : public stream::model_reader {
+ public:
+  PlyReader() : stream::model_reader() {}
 
-      virtual ~PlyReader() {
-      }
+  virtual ~PlyReader() {}
 
-      virtual bool read(std::istream &in);
-    };
+  virtual bool read(std::istream& in);
+};
 
-    class PlyWriter : public stream::model_writer {
-    public:
-      bool binary;
-      bool byteswap;
+class PlyWriter : public stream::model_writer {
+ public:
+  bool binary;
+  bool byteswap;
 
-      PlyWriter(bool _binary, bool _byteswap) : stream::model_writer(), binary(_binary), byteswap(_byteswap) {
-      }
+  PlyWriter(bool _binary, bool _byteswap)
+      : stream::model_writer(), binary(_binary), byteswap(_byteswap) {}
 
-      virtual ~PlyWriter() {
-      }
+  virtual ~PlyWriter() {}
 
-      virtual bool write(std::ostream &in);
-    };
-
-  }
+  virtual bool write(std::ostream& in);
+};
+}
 }

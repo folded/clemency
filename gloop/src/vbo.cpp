@@ -31,6 +31,4 @@
 #include <gloop/gloop-math.hpp>
 #include <gloop/gloop-gl.hpp>
 
-namespace gloop {
-
-}
+namespace gloop {}

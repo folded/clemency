@@ -36,44 +36,42 @@
 #include <map>
 
 namespace gloop {
-  namespace vtk {
+namespace vtk {
 
-    class VtkReader : public stream::model_reader {
-      struct point_t { double x, y, z; };
+class VtkReader : public stream::model_reader {
+  struct point_t {
+    double x, y, z;
+  };
 
-      void emitPoints(const std::vector<point_t> &point_data, const std::string &base);
+  void emitPoints(const std::vector<point_t>& point_data,
+                  const std::string& base);
 
-      bool readASCII(std::istream &in);
-      bool readBinary(std::istream &in);
-      bool readPlain(std::istream &in);
-      bool readXML(std::istream &in);
+  bool readASCII(std::istream& in);
+  bool readBinary(std::istream& in);
+  bool readPlain(std::istream& in);
+  bool readXML(std::istream& in);
 
-    public:
-      VtkReader() : stream::model_reader() {
-      }
+ public:
+  VtkReader() : stream::model_reader() {}
 
-      virtual ~VtkReader() {
-      }
+  virtual ~VtkReader() {}
 
-      virtual bool read(std::istream &in);
-    };
+  virtual bool read(std::istream& in);
+};
 
-    class VtkWriter : public stream::model_writer {
-    public:
-      enum Fmt { ASCII, BINARY, XML };
+class VtkWriter : public stream::model_writer {
+ public:
+  enum Fmt { ASCII, BINARY, XML };
 
-    protected:
-      Fmt fmt;
+ protected:
+  Fmt fmt;
 
-    public:
-      VtkWriter(Fmt _fmt) : stream::model_writer(), fmt(_fmt) {
-      }
+ public:
+  VtkWriter(Fmt _fmt) : stream::model_writer(), fmt(_fmt) {}
 
-      virtual ~VtkWriter() {
-      }
+  virtual ~VtkWriter() {}
 
-      virtual bool write(std::ostream &in);
-    };
-
-  }
+  virtual bool write(std::ostream& in);
+};
+}
 }

@@ -19,8 +19,6 @@
 
 #pragma once
 
-
-
 #include <clemency/geom/v2.hpp>
 #include <clemency/geom/v3.hpp>
 
